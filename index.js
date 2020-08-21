@@ -120,7 +120,7 @@ bot.on("message", function(msg){
 							fields: [
 								{
 									name: "Version",
-									value: "0.3.0",
+									value: "0.4.1",
 									inline: true
 								},
 								{
@@ -301,28 +301,28 @@ bot.on("message", function(msg){
 						break;
 					case "notify":
 						modOnly(msg, () => {
-							if(!arg[0]){
-								break;
+							if(arg[0]){
+								switch(arg[0]){
+									case "update":
+										bot.channels.fetch(config.channelIDs.announcements).then(channel => {
+											channel.send(
+												"Hey, @everyone. It's me, Doc Bot.\n\nOn " + fullDate(new Date(new Date().getTime() + 9e7)) +
+												", exactly 25 hours from now, I will be experiencing an update and will not be online. As a result" +
+												", a few channels will close to prevent unqueued processes when I go back online.\n" +
+
+												"The #promotion channel will close in 45 minutes from now, preventing anyone from posting " +
+												"to the channel. However, it will still remain visable to everyone.\n" +
+
+												"Thank you for your understanding. When I return, I will have more to offer.\n\n" +
+
+												"Bye\n-*Doc Bot*"
+											)
+										})
+										break;
+									default:
+										msg.channel.send("@everyone " + args.join(" "))
+								}
 							}
-							switch(arg[0]){
-								case "update":
-									bot.channels.fetch(config.channelIDs.announcements).then(channel => {
-										channel.send(
-											"Hey, @everyone. It's me, Doc Bot.\n\nOn " + fullDate(new Date(new Date().getTime() + 9e7)) +
-											", exactly 25 hours from now, I will be experiencing an update and will not be online. As a result" +
-											", a few channels will close to prevent unqueued processes when I go back online.\n" +
-
-											"The #promotion channel will close in 45 minutes from now, preventing anyone from posting " +
-											"to the channel. However, it will still remain visable to everyone.\n" +
-
-											"Thank you for your understanding. When I return, I will have more to offer.\n\n" +
-
-											"Bye\n-*Doc Bot*"
-										)
-									})
-									break;
-							}
-							msg.channel.send("@everyone " + args.join(" "))
 						})
 						break;
 					case "prepareupdateshutdown":
@@ -354,7 +354,7 @@ bot.on("message", function(msg){
 					case "open":
 						modOnly(msg, () => {
 							bot.channels.fetch(config.channelIDs[args[0]]).then(channel => {
-								channel.updateOverwrite(channel.guild.roles.everyone, {"SEND_MESSAGES": command == "open"})
+								channel.updateOverwrite(channel.guild.roles.everyone, {"SEND_MESSAGES": command == "open" && args[0] == "--force" || null})
 							})
 						})
 						break;

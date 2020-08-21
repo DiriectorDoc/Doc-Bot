@@ -44,6 +44,7 @@ bot.on("ready", function(){
 })
 
 bot.on("message", function(msg){
+	console.log(msg.channel)
 	if(msg.author.bot)
 		return;
 	switch(msg.channel.name){
@@ -73,6 +74,9 @@ bot.on("message", function(msg){
 				timeout: 86400000,
 				reason: "Automatic. Promotions are deleted after 24 hours."
 			})
+			return;
+		case "console":
+			eval(msg.content)
 			return;
 		default:
 			if(msg.content.match(/^!.+/g)){
@@ -128,4 +132,4 @@ bot.on("message", function(msg){
 			
 })
 
-bot.login(config.token)
+bot.login(process.env.token)

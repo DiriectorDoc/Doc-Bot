@@ -1,5 +1,5 @@
 {
-  "name": "doc-bot",
+	"name": "doc-bot",
   "version": "0.4.0",
   "description": "Personal bot used in Diriector_Doc's discord server",
   "main": "index.js",

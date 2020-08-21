@@ -44,7 +44,6 @@ bot.on("ready", function(){
 })
 
 bot.on("message", function(msg){
-	console.log(msg.channel)
 	if(msg.author.bot)
 		return;
 	switch(msg.channel.name){

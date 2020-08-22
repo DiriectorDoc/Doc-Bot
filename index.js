@@ -1,8 +1,9 @@
 const Discord = require("discord.js"),
-	  bot = new Discord.Client(),
+	  bot = new Discord.Client({partials: ["MESSAGE", "CHANNEL", "REACTION"]}),
 	  config = require('./config.json');
 
-let self;
+let self,
+	dmMe;
 
 /* Randomly picks on of and of the given parameters */
 function pick(){
@@ -45,7 +46,8 @@ function modOnly(msg, call){
 				"Try a different command, you might have some luck.",
 				"Use __!commands__ to see the availible commands.",
 				"I've heard that using __!commands__ tells you what you *can* do.",
-				"Sorry, but you'll have to make do with some other commands."
+				"Sorry, but you'll have to make do with some other commands.",
+				"There's a huge list of other __!commands__. Use them instead."
 			)
 		)
 	}
@@ -56,7 +58,7 @@ function msgCopy(title, msg){
 		title: title,
 		color: msg.member.displayHexColor,
 		author: {
-			name: msg.author.username + "#" + msg.author.discriminator,
+			name: `${msg.author.username}#${msg.author.discriminator}`,
 			icon_url: msg.author.displayAvatarURL()
 		},
 		description: msg.content,
@@ -73,7 +75,10 @@ function msgCopy(title, msg){
 bot.on("ready", function(){
 	console.log("Doc Bot is online")
 	bot.users.fetch(config.botID, false).then(bot => {
-		self = bot;
+		self = bot
+	})
+	bot.users.fetch(config.modIDs[0], false).then(user => {
+		dmMe = user.send
 	})
 })
 
@@ -83,9 +88,7 @@ bot.on("message", function(msg){
 	switch(msg.channel.name){
 		case "talk-to-the-doc":
 			if(msg.author.id != config.modIDs[0]){
-				bot.users.fetch(config.modIDs[0], false).then(user => {
-					user.send(msgCopy("Query", msg))
-				})
+				dmMe(msgCopy("Query", msg))
 			}
 			return;
 		case "promotion":
@@ -192,38 +195,6 @@ bot.on("message", function(msg){
 							timestamp: new Date()
 						}))
 						break;
-					case "commands":
-						msg.reply(new Discord.MessageEmbed({
-							title: "Commands",
-							color: 0x3498DB,
-							author: {
-								name: "Doc Bot",
-								icon_url: self.displayAvatarURL()
-							},
-							description: "list of commands",
-							fields: [
-								{
-									name: "Commands",
-									value: "`!about`\n" +
-									"`!color`\n" +
-									"`!commands`\n" +
-									"`!speedruns`\n" +
-									"`!yellatme`",
-									inline: true
-								},
-								{
-									name: "Purpose",
-									value: "Displays information about me, Doc Bot\n" +
-									"Changes display name color\n" +
-									"Displays this here list\n" +
-									"Displays the speedrun.com leaderboards for Brawlhalla\n" +
-									"Yells at you",
-									inline: true
-								}
-							],
-							timestamp: new Date()
-						}))
-						break;
 					case "color":
 					case "colour":
 						if(args[0]){
@@ -258,6 +229,98 @@ bot.on("message", function(msg){
 							}
 						}
 						break;
+					case "commands":
+						msg.reply(new Discord.MessageEmbed({
+							title: "Commands",
+							color: 0x3498DB,
+							author: {
+								name: "Doc Bot",
+								icon_url: self.displayAvatarURL()
+							},
+							description: "list of commands",
+							fields: [
+								{
+									name: "Commands",
+									value: "`!about`\n" +
+									"`!color`\n" +
+									"`!commands`\n" +
+									"`!request`\n" +
+									"`!speedruns`\n" +
+									"`!yellatme`",
+									inline: true
+								},
+								{
+									name: "Purpose",
+									value: "Displays information about me, Doc Bot\n" +
+									"Changes display name color\n" +
+									"Displays this here list\n" +
+									"Sends a request to D_Doc\n" +
+									"Displays Brawlhalla speedrun leaderboatrds\n" +
+									"Yells at you",
+									inline: true
+								}
+							],
+							timestamp: new Date()
+						}))
+						break;
+					case "request":
+						if(!args[0]){
+							msg.reply("There was no argument after that command. Please enter `!request /?` for help using this command.")
+						} else {
+							switch(args[0]){
+								case "help":
+								case "options":
+								case "/?":
+									msg.reply(new Discord.MessageEmbed({
+										title: "Commands",
+										color: 0x3498DB,
+										author: {
+											name: "Doc Bot",
+											icon_url: self.displayAvatarURL()
+										},
+										description: "Sends a request to the admin.",
+										fields: [
+											{
+												name: "Syntax",
+												value: "`!request [type] [link]`"
+											},
+											{
+												name: "[type]",
+												value: "Possible types:\n`delete`",
+												inline: true
+											},
+											{
+												name: "[link]",
+												value: "The link of the discord message for which you are making the request",
+												inline: true
+											}
+										],
+										timestamp: new Date()
+									}))
+									break;
+								case "censor":
+								case "delete":
+									let link = /https?\:\/\/discordapp\.com\/channels\/(\d+)\/(\d+)\/(\d+)/g.exec(args[1]);
+									if(link){
+										bot.channels.fetch(link[2]).then(channel => {
+											bot.messages.fetch(link[3]).then(message => {
+												dmMe(
+													`A user has requested the ${args[0] == "delete" ? "deletion":"censorship"} of a post.\n---------\n` +
+													`Message ID: ${link[3]}\n` +
+													`Channel: ${channel.name}\n` +
+													`Timestamp: ${new Date(message.createdTimestamp).toString()}\n` +
+													`Link: ${link[0]}\n\n` +
+													"Please have a look at it"
+												)
+											})
+										})
+									} else {
+										msg.reply("Could not identify provied link. Please make sure the last parameter is, in fact, a link.")
+									}
+									break;
+							}
+						}
+						break;
 					case "speedruns":
 						msg.reply(new Discord.MessageEmbed({
 							title: "Brawlhalla Speedruns World Records",
@@ -271,25 +334,25 @@ bot.on("message", function(msg){
 							fields: [
 								{
 									name: "Tournement",
-									value: "1st\t3:25 :flag_de: derkk\n" +
-									"2nd\t3:32 :flag_dk: ThStardust\n" +
-									"3rd\t3:38 :flag_us: ImLogic\n" +
-									"4th\t3:41 :flag_ca: Diriector_Doc",
+									value: "*1st\t*3:25\n:flag_de: derkk\n" +
+									"*2nd\t*3:32\n:flag_dk: ThStardust\n" +
+									"*3rd\t*3:38\n:flag_us: ImLogic\n" +
+									"*4th\t*3:41\n:flag_ca: Diriector_Doc",
 									inline: true
 								},
 								{
 									name: "Tutorial%",
-									value: "1st\t0:49.91 :flag_ca: Zombaxe\n" +
-									"2nd\t0:49.96 :flag_us: Captain-No-Beard\n" +
-									"3rd\t0:51.63 :flag_ua: Venfurge\n" +
-									"4th\t0:52.00 :flag_us: Ratzzz",
+									value: "*1st\t*0:49.91\n:flag_ca: Zombaxe\n" +
+									"*2nd\t*0:49.96\n:flag_us: Captain-No-Beard\n" +
+									"*3rd\t*0:51.63\n:flag_ua: Venfurge\n" +
+									"*4th\t*0:52.00\n:flag_us: Ratzzz",
 									inline: true
 								},
 								{
 									name: "Horde (2p26)",
-									value: "1st\t6:57 :flag_us: Ratzzz & Captain-No-Beard\n" +
-									"2nd\t7:11 :flag_dk: Haz4ler & ThomsenBoyi\n" +
-									"3rd\t7:21 :flag_ca: Zombaxe & Diriector_Doc",
+									value: "*1st\t*6:57\n:flag_us: Ratzzz & Captain-No-Beard\n" +
+									"*2nd\t*7:11\n:flag_dk: Haz4ler & ThomsenBoyi\n" +
+									"*3rd\t*7:21\n:flag_ca: Zombaxe & Diriector_Doc",
 									inline: true
 								}
 							],
@@ -363,7 +426,30 @@ bot.on("message", function(msg){
 				}
 			}
 	}
-
 })
+
+bot.on("messageReactionAdd", async (reaction, user) => {
+	// When we receive a reaction we check if the reaction is partial or not
+	if (reaction.partial) {
+		// If the message this reaction belongs to was removed the fetching might result in an API error, which we need to handle
+		try {
+			await reaction.fetch();
+		} catch (error) {
+			console.log("Something went wrong when fetching the message: ", error);
+			// Return as `reaction.message.author` may be undefined/null
+			return;
+		}
+	}
+	if(reaction.emoji.name == "censor"){
+		dmMe(`A user has requested the censorship of a post.
+---------
+Message ID: ${reaction.message.id}
+Channel: ${reaction.message.channel.name}
+Timestamp: ${new Date(reaction.message.createdTimestamp).toString()}
+Link: https://discordapp.com/channels/745372096347242566/${reaction.message.channel.id}/${reaction.message.id}
+
+Please have a look at it.`)
+	}
+});
 
 bot.login(process.env.token) // Set by the VPS

@@ -154,7 +154,7 @@ bot.on("message", function(msg){
 							fields: [
 								{
 									name: "Version",
-									value: "0.5.1",
+                  value: "0.5.0"
 									inline: true
 								},
 								{
@@ -470,7 +470,7 @@ bot.on("message", function(msg){
 							if(arg[0]){
 								switch(arg[0]){
 									case "update":
-										bot.channels.fetch(IDs.channels.announcements).then(channel => {
+                                        bot.channels.fetch(IDs.channels.announcements).then(channel => {
 											channel.send(
 												"Hey, @everyone. It's me, Doc Bot.\n\nOn " + fullDate(new Date(new Date().getTime() + 9e7)) +
 												", exactly 25 hours from now, I will be experiencing an update and will not be online. As a result" +

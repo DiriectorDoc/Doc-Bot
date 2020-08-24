@@ -154,7 +154,7 @@ bot.on("message", function(msg){
 							fields: [
 								{
 									name: "Version",
-                  value: "0.5.0"
+									value: "0.5.0",
 									inline: true
 								},
 								{

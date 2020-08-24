@@ -8,22 +8,22 @@ Here are the commands that Doc Bot offers:
 Syntax | Usage
 -------|------
 [`!about`](#about) | Replies with a list of commands
-[`!color [color]`](#color) or<br/>`!colour [colour]` | Changes the colour of the display name of the user who entered the command
+[`!colour`](#colour) or<br/>`!color` | Changes the colour of the display name of the user who entered the command
 [`!commands`](#commands) | Replies with a list of commands
-[`!request [type] [link]`](#request) | Sends a request to the admin
+[`!request`](#request) | Sends a request to the admin
 [`!speedruns`](#speedruns) | Replies with the Brawlhalla Speedrun leaderboards
 [`!yellatme`](#yellatme) | Yells at the user
 
 ## !about
-Displays things like version number, creater, and linked repository.
+Displays things like version number, creator, and linked repository.
 
-### Parameters
+### Usage
 This command does not accept a parameter. Entering anything following the command, even a [help](#help) argument, does nothing.
 
-## !color
+## !colour
 The user who enters this command will have their display name change color depending upon the string preceding it.
 
-### Parameters
+### Usage
 The first argument will be the name of the colour to which the name is being changed. The user can pick between any of the following colours:
 
 * `Red`
@@ -40,7 +40,7 @@ The first argument will be the name of the colour to which the name is being cha
 This parameter is not case sensitive.
 
 ### Example
-The following command will change the user's display name color to red.
+The following command will change the user's display name color to red:
 
     !colour red
 
@@ -48,52 +48,83 @@ Additionally, you can list the available colours by entering
 
     !colour colours
 
-...or by entering one of the [help](#help) arguments such as
-
-    !colour /?
-
-### Further behaviour
-Entering `!colour` without a parameter will do nothing. Entering `!colour` with a misspelled colour, however, will work the same as if the user had entered `!colour white`.
+Using this parameter for `!colour` is identical to entering one of the [help](#help) arguments.
 
 ## !request
 Sends a request to the admin depending on the type of request.
 
-### Parameters
+### Usage
 The syntax for this command is as follows:
 
     !request [type] [link]
-
-Since this command takes parameters, a [help](#help) argument can be used in place of the `[type]` parameter to prompt the user with usage information.
 
 #### [type]
 The type of request you would like to make.
 
 Possible types:
 
-* `delete`: Request for a deleteion of a post
-* `censor`: Request for a censorship of a post
+* `delete`: Request for deletion of a post
+* `censor`: Request for censorship of a post
 
 #### [link]
-The link to the discord message in question. To get the link of a discord message, right click on the message then select the "Copy Message Link" option.
+The link to the discord message in question. To get the link of a discord message, right-click on the message then select the "Copy Message Link" option.
 
 ### Example
     !request delete https://discordapp.com/channels/123456789012345678/234567890123456789/345678901234567890
 
 ## !speedruns
-Displays the Brawlhalla speedrun leaderboards. Information displayed was coppied directly from [speedrun.com/brawlhalla](https://speedrun.com/brawlhalla).
+Displays the Brawlhalla speedrun leaderboards. The information displayed was copied directly from [speedrun.com/brawlhalla](https://speedrun.com/brawlhalla).
 
-### Parameters
-This command does not accept a parameter. Entering anything following the command, even a [help](#help) argument, does nothing.
+### Usage
+The syntax for this command is as follows:
+
+    !speedruns [category] [ruleset...[ruleset2]]
+
+#### [category]
+Possible category parameters:
+
+* `tournament`
+* `horde`
+* `tutorial%` or `tutorial`
+
+#### [ruleset]
+Tournament only:
+
+* `sigs` (default)
+* `nosigs`
+
+Horde only<br/>*First ruleset*
+
+* `2p` (default)
+* `3p`
+* `4p`
+
+*Second ruleset*
+
+* `wave11`
+* `wave21`
+* `wave26` (default)
+
+### Example
+
+    !speedruns tournament sigs
+    !speedruns horde 2p wave21
+    !speedruns tutorial%
+
+    !speedruns tournament
+    !speedruns horde
+
+>**Note**: If a category only has 1 ruleset, or nad no ruleset at all, the proceeding parameter will be ignored
 
 ## !yellatme
 Replies with the "admin-only command" message. This message is randomly generated each time.
->Note: This command works identical to how every admin-only command works. The only difference is that this command appears on the [`!commands`](#commands) list. Consequently, if an admin uses this command, nothing happens.
+>Note: This command works identically to how every admin-only command works. The only difference is that this command appears on the [`!commands`](#commands) list. Consequently, if an admin uses this command, nothing happens.
 
-### Parameters
+### Usage
 This command does not accept a parameter. Entering anything following the command, even a [help](#help) argument, does nothing.
 
 ## Help
-If you want to know the syntax of any command, simply type the command followed by one of these strings:
+If you want to know the syntax, usage, or otherwise of a command, simply type the command followed by one of these strings:
 
 * `help`
 * `/?`
@@ -102,3 +133,5 @@ If you want to know the syntax of any command, simply type the command followed 
 ### Example
 
     !colour /?
+
+This trick will only work with commands that accept a parameter. Single-word commands will ignore all arguments that follow it and be carried through like always.

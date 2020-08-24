@@ -1,6 +1,10 @@
 const Discord = require("discord.js"),
 	  bot = new Discord.Client({partials: ["MESSAGE", "CHANNEL", "REACTION"]}),
-	  config = require('./config.json');
+	  
+	  yaml = (link) => require("js-yaml").safeLoad(require("fs").readFileSync(link, "utf8")),
+	  
+	  leaderboard = yaml("leaderboard.yml"),
+	  IDs = yaml("IDs.yml");
 
 let self,
 	dmMe;
@@ -12,15 +16,15 @@ function pick(){
 
 /* Turns a date into a neatly formated date and time to be used in a sentence */
 function fullDate(date) {
-	return ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][date.getUTCDay()] + ", " +
-		["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][date.getUTCMonth()] + " " +
-		date.getUTCDate() + ", " + date.getUTCFullYear() + ", " +
-		"at " + date.getUTCHours + ":" + date.getUTCMinutes() + " UTC"
+	return ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][date.getUTCDay()] +
+		`, ${["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][date.getUTCMonth()]} ` +
+		`${date.getUTCDate()}, ${date.getUTCFullYear()}, ` +
+		`at ${date.getUTCHours}:${date.getUTCMinutes()} UTC`
 }
 
 /* Checks who entered the command. If it was an admin, it executes the callback. Else, it replies with a randomly generated message. */
 function modOnly(msg, call){
-	if(config.modIDs.some(id => id === msg.author.id)){
+	if(IDs.mods.some(id => id === msg.author.id)){
 		call()
 	} else {
 		msg.reply(
@@ -44,15 +48,37 @@ function modOnly(msg, call){
 			pick(
 				"Lay of the admin commands, m'kay?",
 				"Try a different command, you might have some luck.",
-				"Use __!commands__ to see the availible commands.",
-				"I've heard that using __!commands__ tells you what you *can* do.",
+				"Use `!commands` to see the availible commands.",
+				"I've heard that using `!commands` tells you what you *can* do.",
 				"Sorry, but you'll have to make do with some other commands.",
-				"There's a huge list of other __!commands__. Use them instead."
+				"There's a huge list of other `!commands`. Use them instead."
 			)
 		)
 	}
 }
 
+/* Returns an array of fielsds to bu used in an embeded message. Fields contain the top 3 placings according to leaderboards.yml */
+function getTop3(cat){
+	return [
+		{
+			name: `${cat[0].place + ([, "st", "nd", "rd"][cat[0].place] || "th")} ${cat[0].time}`,
+			value: `:flag_${cat[0].region}:${cat[0].player || cat[0].players.join(", ")}`,
+			inline: true
+		},
+		{
+			name: `${cat[1].place + ([, "st", "nd", "rd"][cat[1].place] || "th")} ${cat[1].time}`,
+			value: `:flag_${cat[1].region}:${cat[1].player || cat[1].players.join(", ")}`,
+			inline: true
+		},
+		{
+			name: `${cat[2].place + ([, "st", "nd", "rd"][cat[2].place] || "th")} ${cat[2].time}`,
+			value: `:flag_${cat[2].region}:${cat[2].player || cat[2].players.join(", ")}`,
+			inline: true
+		}
+	]
+}
+
+/* Creates an embed using a sent message as the discription */
 function msgCopy(title, msg){
 	return new Discord.MessageEmbed({
 		title: title,
@@ -72,12 +98,17 @@ function msgCopy(title, msg){
 	})
 }
 
+/* Replies to user with a message saying they used a command incorrectly */
+function badCommand(msg, command, text){
+	msg.reply(`${text || "You inputted that command incorrectly."} Try again or enter \`!${command}\` for help.`)
+}
+
 bot.on("ready", function(){
 	console.log("Doc Bot is online")
-	bot.users.fetch(config.botID, false).then(bot => {
+	bot.users.fetch(IDs.bot, false).then(bot => {
 		self = bot
 	})
-	bot.users.fetch(config.modIDs[0], false).then(user => {
+	bot.users.fetch(IDs.mods[0], false).then(user => {
 		dmMe = user.send
 	})
 })
@@ -87,12 +118,12 @@ bot.on("message", function(msg){
 		return;
 	switch(msg.channel.name){
 		case "talk-to-the-doc":
-			if(msg.author.id != config.modIDs[0]){
+			if(msg.author.id != IDs.mods[0]){
 				dmMe(msgCopy("Query", msg))
 			}
 			return;
 		case "promotion":
-			bot.channels.fetch(config.channelIDs.archive).then(channel => {
+			bot.channels.fetch(IDs.channels.archive).then(channel => {
 				channel.send(msgCopy("Archived Promotion", msg))
 			})
 			msg.delete({
@@ -105,7 +136,7 @@ bot.on("message", function(msg){
 			return;
 		default:
 			if(msg.content.match(/^!.+/g)){
-				let args = msg.content.split(" "),
+				let args = msg.content.toLowerCase().split(" "),
 					command = args.shift().substring(1);
 				switch(command){
 					case "about":
@@ -123,7 +154,7 @@ bot.on("message", function(msg){
 							fields: [
 								{
 									name: "Version",
-									value: "0.3.0",
+									value: "0.5.1",
 									inline: true
 								},
 								{
@@ -212,10 +243,10 @@ bot.on("message", function(msg){
 											name: "Doc Bot",
 											icon_url: self.displayAvatarURL()
 										},
-										description: "Changes the " + (arg == "colors" ? "color":"colour") + " of your display name.",
+										description: `Changes the ${arg == "colors" ? "color":"colour"} of your display name.`,
 										fields: [
 											{
-												name: "Availible" + (arg == "colors" ? "Colors":"Colours"),
+												name: `Availible ${arg == "colors" ? "Colors":"Colours"}`,
 												value: "`red`\n`orange`\n`yellow`\n`green`\n`blue`\n`cyan`\n`purple`\n`violet` (same as purple)\n`pink`\n`white`"
 											}
 										],
@@ -224,9 +255,11 @@ bot.on("message", function(msg){
 									break;
 								default:
 									msg.guild.members.fetch(msg.author.id).then(guildMember => {
-										guildMember.roles.set(config.colourIDs[arg] || [])
+										guildMember.roles.set(IDs.colours[arg] || [])
 									})
 							}
+						} else {
+							badCommand(msg, command)
 						}
 						break;
 					case "commands":
@@ -264,9 +297,7 @@ bot.on("message", function(msg){
 						}))
 						break;
 					case "request":
-						if(!args[0]){
-							msg.reply("There was no argument after that command. Please enter `!request /?` for help using this command.")
-						} else {
+						if(args[0]){
 							switch(args[0]){
 								case "help":
 								case "options":
@@ -315,84 +346,156 @@ bot.on("message", function(msg){
 											})
 										})
 									} else {
-										msg.reply("Could not identify provied link. Please make sure the last parameter is, in fact, a link.")
+										msg.reply("Could not identify provied link. Please make sure the last parameter is, in fact, the correct link.")
 									}
 									break;
 							}
+						} else {
+							badCommand(msg, command)
 						}
 						break;
 					case "speedruns":
-						msg.reply(new Discord.MessageEmbed({
-							title: "Brawlhalla Speedruns World Records",
-							url: "https://www.speedrun.com/brawlhalla",
-							color: 0x3498DB,
-							author: {
-								name: "DocBot",
-								icon_url: self.displayAvatarURL()
-							},
-							description: "Leaderboards from speedrun.com/brawlhalla",
-							fields: [
-								{
-									name: "Tournement",
-									value: "*1st\t*3:25\n:flag_de: derkk\n" +
-									"*2nd\t*3:32\n:flag_dk: ThStardust\n" +
-									"*3rd\t*3:38\n:flag_us: ImLogic\n" +
-									"*4th\t*3:41\n:flag_ca: Diriector_Doc",
-									inline: true
-								},
-								{
-									name: "Tutorial%",
-									value: "*1st\t*0:49.91\n:flag_ca: Zombaxe\n" +
-									"*2nd\t*0:49.96\n:flag_us: Captain-No-Beard\n" +
-									"*3rd\t*0:51.63\n:flag_ua: Venfurge\n" +
-									"*4th\t*0:52.00\n:flag_us: Ratzzz",
-									inline: true
-								},
-								{
-									name: "Horde (2p26)",
-									value: "*1st\t*6:57\n:flag_us: Ratzzz & Captain-No-Beard\n" +
-									"*2nd\t*7:11\n:flag_dk: Haz4ler & ThomsenBoyi\n" +
-									"*3rd\t*7:21\n:flag_ca: Zombaxe & Diriector_Doc",
-									inline: true
-								}
-							],
-							timestamp: new Date()
-						}))
+						if(arg[0]){
+							let rule,
+								rule2;
+							switch(arg[0]){
+								case "help":
+								case "options":
+								case "/?":
+								case "boards":
+									msg.reply(new Discord.MessageEmbed({
+										title: "Commands",
+										color: 0x3498DB,
+										author: {
+											name: "Doc Bot",
+											icon_url: self.displayAvatarURL()
+										},
+										description: "Sends a request to the admin.",
+										fields: [
+											{
+												name: "Syntax",
+												value: "`!speedruns [category] [ruleset...[ruleset2]]`"
+											},
+											{
+												name: "[category]",
+												value: "Possible categories:\n`tournament`\n`horde`\n`tutorial%`",
+												inline: true
+											},
+											{
+												name: "[ruleset]",
+												value: "Possible rulesets:\n" +
+												"*For Tournament mode*\n`sigs`\n`noSigs` (case sensitive)\n" +
+												"*For Horde mode*\n`2p`\n`3p`\n`4p` ",
+												inline: true
+											},
+											{
+												name: "[ruleset2]",
+												value: "Possible rulesets:\n" +
+												"*For Horde mode*\n`wave11`\n`wave21`\n`wave26` ",
+												inline: true
+											},
+											{
+												name: "Notes",
+												value: "The `tutorial%` category has no ruleset subcategories. Addition parameters proceding the command will have no effect."
+											}
+										],
+										timestamp: new Date()
+									}))
+									break;
+								case "tournament":
+									rule = args[1].match(/^(no)?sigs$/g) || args[1] == undefined;
+									rule2 = false
+									if(rule === true){
+										rule = ["sigs"]
+									} else {
+										badCommand(msg, command)
+										break;
+									}
+								case "horde":
+									rule = rule || args[1].match(/^[2-4]p$/g) || args[1] == undefined;
+									rule2 = rule2 !== false ? args[2].match(/^wave(11|21|26)$/g) || ["wave26"]:false;
+									if(rule === true){
+										rule = ["2p"]
+									} else {
+										badCommand(msg, command)
+										break;
+									}
+									msg.reply(new Discord.MessageEmbed({
+										title: "Brawlhalla Speedrun Leaderboard",
+										url: "https://www.speedrun.com/brawlhalla",
+										color: 0x3498DB,
+										author: {
+											name: "DocBot",
+											icon_url: self.displayAvatarURL()
+										},
+										description: args[0][0].toUpperCase()+args[0].slice(1)} + 
+										` ${
+											rule2 ?
+											`${rule[0]} ${rule2[0].replace(/e([12])/g, "e $1")}` :
+											rule[0] == "sigs" ? "":"No Signatures"
+										}` +
+										"\n\nLeaderboard from speedrun.com/brawlhalla",
+										fields: getTop3(
+											rule2 ?
+											leaderboard[args[0]][rule[0]][rule2[0]] :
+											leaderboard[args[0]][rule[0]]
+										),
+										timestamp: new Date()
+									}))
+									break;
+								case "tutorial":
+								case "tutorial%":
+									msg.reply(new Discord.MessageEmbed({
+										title: "Brawlhalla Speedrun Leaderboard",
+										url: "https://www.speedrun.com/brawlhalla",
+										color: 0x3498DB,
+										author: {
+											name: "DocBot",
+											icon_url: self.displayAvatarURL()
+										},
+										description: "Tutorual%\n\nLeaderboard from speedrun.com/brawlhalla",
+										fields: getTop3(leaderboard[args[0].replace("%", "")]),
+										timestamp: new Date()
+									}))
+							}
+						} else {
+							badCommand(msg, command, "The syntax for this command has changed.")
+						}
 						break;
 					case "yellatme":
 						modOnly(msg, () => null)
 						break;
 					case "notify":
 						modOnly(msg, () => {
-							if(!arg[0]){
-								break;
+							if(arg[0]){
+								switch(arg[0]){
+									case "update":
+										bot.channels.fetch(IDs.channels.announcements).then(channel => {
+											channel.send(
+												"Hey, @everyone. It's me, Doc Bot.\n\nOn " + fullDate(new Date(new Date().getTime() + 9e7)) +
+												", exactly 25 hours from now, I will be experiencing an update and will not be online. As a result" +
+												", a few channels will close to prevent unqueued processes when I go back online.\n" +
+
+												"The #promotion channel will close in 45 minutes from now, preventing anyone from posting " +
+												"to the channel. However, it will still remain visable to everyone.\n" +
+
+												"Thank you for your understanding. When I return, I will have more to offer.\n\n" +
+
+												"Bye\n-*Doc Bot*"
+											)
+										})
+										break;
+									default:
+										msg.channel.send("@everyone " + args.join(" "))
+								}
 							}
-							switch(arg[0]){
-								case "update":
-									bot.channels.fetch(config.channelIDs.announcements).then(channel => {
-										channel.send(
-											"Hey, @everyone. It's me, Doc Bot.\n\nOn " + fullDate(new Date(new Date().getTime() + 9e7)) +
-											", exactly 25 hours from now, I will be experiencing an update and will not be online. As a result" +
-											", a few channels will close to prevent unqueued processes when I go back online.\n" +
-
-											"The #promotion channel will close in 45 minutes from now, preventing anyone from posting " +
-											"to the channel. However, it will still remain visable to everyone.\n" +
-
-											"Thank you for your understanding. When I return, I will have more to offer.\n\n" +
-
-											"Bye\n-*Doc Bot*"
-										)
-									})
-									break;
-							}
-							msg.channel.send("@everyone " + args.join(" "))
 						})
 						break;
 					case "prepareupdateshutdown":
 						modOnly(msg, () => {
 							msg.channel.send("Preparing shutdown.\nClosing #promotion in 45 minutes.\nLogging off in 25 hours.")
 							setTimeout(function(){
-								bot.channels.fetch(config.channelIDs.promotion).then(channel => {
+								bot.channels.fetch(IDs.channels.promotion).then(channel => {
 									channel.updateOverwrite(channel.guild.roles.everyone, {"SEND_MESSAGES": false})
 								})
 							}, 27e5)
@@ -416,7 +519,7 @@ bot.on("message", function(msg){
 					case "close":
 					case "open":
 						modOnly(msg, () => {
-							bot.channels.fetch(config.channelIDs[args[0]]).then(channel => {
+							bot.channels.fetch(IDs.channels[args[0]]).then(channel => {
 								channel.updateOverwrite(channel.guild.roles.everyone, {"SEND_MESSAGES": command == "open"})
 							})
 						})
@@ -446,7 +549,7 @@ bot.on("messageReactionAdd", async (reaction, user) => {
 Message ID: ${reaction.message.id}
 Channel: ${reaction.message.channel.name}
 Timestamp: ${new Date(reaction.message.createdTimestamp).toString()}
-Link: https://discordapp.com/channels/745372096347242566/${reaction.message.channel.id}/${reaction.message.id}
+Link: https://discordapp.com/channels/${IDs.server}/${reaction.message.channel.id}/${reaction.message.id}
 
 Please have a look at it.`)
 	}

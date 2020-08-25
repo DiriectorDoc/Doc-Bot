@@ -3,7 +3,7 @@ const Discord = require("discord.js"),
 	  
 	  yaml = (link) => require("js-yaml").safeLoad(require("fs").readFileSync(link, "utf8")),
 	  
-	  leaderboard = yaml("leaderboard.yml"),
+	  leaderboard = yaml("leaderboards.yml"),
 	  IDs = yaml("IDs.yml");
 
 let self,

@@ -433,11 +433,7 @@ bot.on("message", function(msg){
 											rule[0] == "sigs" ? "":"No Signatures"
 										}` +
 										"\n\nLeaderboard from speedrun.com/brawlhalla",
-										fields: getTop3(
-											rule2 ?
-											leaderboard[args[0]][rule[0]][rule2[0]] :
-											leaderboard[args[0]][rule[0]]
-										),
+										fields: getTop3(rule2 ? leaderboard[args[0]][rule[0]][rule2[0]]:leaderboard[args[0]][rule[0]]),
 										timestamp: new Date()
 									}))
 									break;

@@ -418,12 +418,6 @@ bot.on("message", function(msg){
 										badCommand(msg, command)
 										break;
 									}
-									let top3;
-									if(rule2){
-										top3 = getTop3(leaderboard[args[0]][rule[0]][rule2[0]])
-									} else {
-										top3 = getTop3(leaderboard[args[0]][rule[0]])
-									}
 									msg.reply(new Discord.MessageEmbed({
 										title: "Brawlhalla Speedrun Leaderboard",
 										url: "https://www.speedrun.com/brawlhalla",
@@ -432,14 +426,18 @@ bot.on("message", function(msg){
 											name: "DocBot",
 											icon_url: self.displayAvatarURL()
 										},
-										description: args[0][0].toUpperCase()+args[0].slice(1)} + 
+										description: args[0][0].toUpperCase()+args[0].slice(1) + 
 										` ${
 											rule2 ?
 											rule[0] + ` ${rule2[0].replace(/e([12])/g, "e $1")}` :
 											rule[0] == "sigs" ? "":"No Signatures"
 										}` +
 										"\n\nLeaderboard from speedrun.com/brawlhalla",
-										fields: top3,
+										fields: getTop3(
+											rule2 ?
+											leaderboard[args[0]][rule[0]][rule2[0]] :
+											leaderboard[args[0]][rule[0]]
+										),
 										timestamp: new Date()
 									}))
 									break;

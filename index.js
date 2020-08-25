@@ -152,8 +152,8 @@ bot.on("message", function(msg){
 							fields: [
 								{
 									name: "Version",
-									value: "0.5.1",
-									inline: true
+                  value: "0.5.1",
+                  inline: true
 								},
 								{
 									name: "Creator",

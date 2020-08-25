@@ -133,8 +133,8 @@ horde:
   2p:
     wave11:
       - players:
-	    - Ratzzz
-		- Captain-No-Beard
+        - Ratzzz
+        - Captain-No-Beard
         place: 1
         time: "2:22"
         region: us
@@ -143,14 +143,14 @@ horde:
         time: "2:30"
         region: us
       - players:
-	    - Haz4ler
-		- ThomsenBoyi
+        - Haz4ler
+        - ThomsenBoyi
         place: 3
         time: "3:32"
         region: dk
       - players:
-	    - Zombaxe
-		- Diriector_Doc
+        - Zombaxe
+        - Diriector_Doc
         place: 4
         time: "2:36"
         region: ca
@@ -159,110 +159,110 @@ horde:
         time: "3:07"
         region: us
       - players:
-	    - idkwhy_usuk
-		- OOFinator919
+        - idkwhy_usuk
+        - OOFinator919
         place: 6
         time: "3:17"
         region: us
     wave21:
       - players:
-	    - Ratzzz
-		- Captain-No-Beard
+        - Ratzzz
+        - Captain-No-Beard
         place: 1
         time: "5:28"
         region: us
       - players:
-	    - Haz4ler
-		- ThomsenBoyi
+        - Haz4ler
+        - ThomsenBoyi
         place: 2
         time: "5:42"
         region: dk
       - players:
-	    - Zombaxe
-		- Diriector_Doc
+        - Zombaxe
+        - Diriector_Doc
         place: 2
         time: "5:42"
         region: ca
     wave26:
       - players:
-	    - Ratzzz
-		- Captain-No-Beard
+        - Ratzzz
+        - Captain-No-Beard
         place: 1
         time: "6:57"
         region: us
       - players:
-	    - Haz4ler
-		- ThomsenBoyi
+        - Haz4ler
+        - ThomsenBoyi
         place: 2
         time: "7:11"
         region: dk
       - players:
-	    - Zombaxe
-		- Diriector_Doc
+        - Zombaxe
+        - Diriector_Doc
         place: 3
         time: "7:21"
         region: ca
   3p:
     wave11:
       - players:
-	    - Ratzzz
-		- Zteady191
-		- Captain-No-Beard
+        - Ratzzz
+        - Zteady191
+        - Captain-No-Beard
         place: 1
         time: "2:40"
         region: us
       - players:
-	    - Ratzzz
-		- ThermalLance
-		- Captain-No-Beard
+        - Ratzzz
+        - ThermalLance
+        - Captain-No-Beard
         place: 2
         time: "2:47"
         region: us
       - players:
-	    - Zombaxe
-		- Diriector_Doc
-		- E S C O
+        - Zombaxe
+        - Diriector_Doc
+        - E S C O
         place: 3
         time: "2:52"
         region: ca
       - players:
-	    - Ratzzz
-		- Captain-No-Beard
-		- Tausty95
+        - Ratzzz
+        - Captain-No-Beard
+        - Tausty95
         place: 3
         time: "2:52"
         region: us
       - players:
-	    - idkwhy_usuk
-		- skellyboi78
-		- OOFinator919
+        - idkwhy_usuk
+        - skellyboi78
+        - OOFinator919
         place: 5
         time: "3:09"
         region: us
     wave21:
       - players:
-	    - Ratzzz
+        - Ratzzz
         - Zteady191
         - Captain-No-Beard
         place: 1
         time: "5:39"
         region: us
       - players:
-	    - Ratzzz
+        - Ratzzz
         - ThermalLance
         - Captain-No-Beard
         place: 2
         time: "5:43"
         region: us
       - players:
-	    - Ratzzz
+        - Ratzzz
         - Captain-No-Beard
         - Tausty95
         place: 3
         time: "6:06"
         region: us
       - players:
-	    - Zombaxe
+        - Zombaxe
         - Diriector_Doc
         - E S C O
         place: 4
@@ -270,7 +270,7 @@ horde:
         region: ca
     wave26:
       - players:
-	    - Ratzzz
+        - Ratzzz
         - Zteady191
         - Captain-No-Beard
         place: 1
@@ -279,7 +279,7 @@ horde:
   4p:
     wave11:
       - players:
-	    - Ratzzz
+        - Ratzzz
         - Zteady191
         - Sinnamon
         - Captain-No-Beard
@@ -287,7 +287,7 @@ horde:
         time: "2:41"
         region: us
       - players:
-	    - JK
+        - JK
         - Lennart_Bladh
         - Tallkotten
         - AntePante_32
@@ -296,7 +296,7 @@ horde:
         region: sv
     wave21:
       - players:
-	    - Ratzzz
+        - Ratzzz
         - Zteady191
         - Sinnamon
         - Captain-No-Beard

@@ -18,8 +18,7 @@ function pick(){
 function fullDate(date) {
 	return ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][date.getUTCDay()] +
 		`, ${["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][date.getUTCMonth()]} ` +
-		`${date.getUTCDate()}, ${date.getUTCFullYear()}, ` +
-		`at ${date.getUTCHours}:${date.getUTCMinutes()} UTC`
+		`${date.getUTCDate()}, ${date.getUTCFullYear()}, at ${date.getUTCHours()}:${date.getUTCMinutes()} UTC`
 }
 
 /* Checks who entered the command. If it was an admin, it executes the callback. Else, it replies with a randomly generated message. */
@@ -59,23 +58,15 @@ function modOnly(msg, call){
 
 /* Returns an array of fielsds to bu used in an embeded message. Fields contain the top 3 placings according to leaderboards.yml */
 function getTop3(cat){
-	return [
-		{
-			name: `${cat[0].place + ([, "st", "nd", "rd"][cat[0].place] || "th")} ${cat[0].time}`,
-			value: `:flag_${cat[0].region}:${cat[0].player || cat[0].players.join(", ")}`,
+	let fields = [];
+	for(var i = 0; i < 3; i++){
+		fields.push({
+			name: `${cat[i].place + ([, "st", "nd", "rd"][cat[i].place] || "th")} ${cat[i].time}`,
+			value: `:flag_${cat[i].region}:${cat[i].player || cat[i].players.join(", ")}`,
 			inline: true
-		},
-		{
-			name: `${cat[1].place + ([, "st", "nd", "rd"][cat[1].place] || "th")} ${cat[1].time}`,
-			value: `:flag_${cat[1].region}:${cat[1].player || cat[1].players.join(", ")}`,
-			inline: true
-		},
-		{
-			name: `${cat[2].place + ([, "st", "nd", "rd"][cat[2].place] || "th")} ${cat[2].time}`,
-			value: `:flag_${cat[2].region}:${cat[2].player || cat[2].players.join(", ")}`,
-			inline: true
-		}
-	]
+		})
+	}
+	return fields
 }
 
 /* Creates an embed using a sent message as the discription */
@@ -83,6 +74,7 @@ function msgCopy(title, msg){
 	return new Discord.MessageEmbed({
 		title: title,
 		color: msg.member.displayHexColor,
+		url: msgLink(msg),
 		author: {
 			name: `${msg.author.username}#${msg.author.discriminator}`,
 			icon_url: msg.author.displayAvatarURL()
@@ -96,6 +88,11 @@ function msgCopy(title, msg){
 		],
 		timestamp: new Date(msg.createdTimestamp)
 	})
+}
+
+/* Returns the inuted message's link */
+function msgLink(msg){
+	return `https://discordapp.com/channels/${IDs.server}/${msg.channel.id}/${msg.id}`
 }
 
 /* Replies to user with a message saying they used a command incorrectly */
@@ -126,6 +123,7 @@ bot.on("message", function(msg){
 			bot.channels.fetch(IDs.channels.archive).then(channel => {
 				channel.send(msgCopy("Archived Promotion", msg))
 			})
+			console.log(`Preparing to delete ${msg.id}`)
 			msg.delete({
 				timeout: 864e5,
 				reason: "Automatic. Promotions are deleted after 24 hours."
@@ -154,8 +152,8 @@ bot.on("message", function(msg){
 							fields: [
 								{
 									name: "Version",
-									value: "0.5.0",
-									inline: true
+                  value: "0.5.1",
+                  inline: true
 								},
 								{
 									name: "Creator",
@@ -333,8 +331,8 @@ bot.on("message", function(msg){
 								case "delete":
 									let link = /https?\:\/\/discordapp\.com\/channels\/(\d+)\/(\d+)\/(\d+)/g.exec(args[1]);
 									if(link){
-										bot.channels.fetch(link[2]).then(channel => {
-											bot.messages.fetch(link[3]).then(message => {
+										bot.channels.fetch(link[2]+"").then(channel => {
+											channel.messages.fetch(link[3]+"").then(message => {
 												dmMe(
 													`A user has requested the ${args[0] == "delete" ? "deletion":"censorship"} of a post.\n---------\n` +
 													`Message ID: ${link[3]}\n` +
@@ -431,7 +429,7 @@ bot.on("message", function(msg){
 										description: args[0][0].toUpperCase()+args[0].slice(1)} + 
 										` ${
 											rule2 ?
-											`${rule[0]} ${rule2[0].replace(/e([12])/g, "e $1")}` :
+											rule[0] + ` ${rule2[0].replace(/e([12])/g, "e $1")}` :
 											rule[0] == "sigs" ? "":"No Signatures"
 										}` +
 										"\n\nLeaderboard from speedrun.com/brawlhalla",
@@ -466,10 +464,10 @@ bot.on("message", function(msg){
 						modOnly(msg, () => null)
 						break;
 					case "notify":
-						modOnly(msg, () => {
-							if(arg[0]){
-								switch(arg[0]){
-									case "update":
+						if(arg[0]){
+							switch(arg[0]){
+								case "update":
+									modOnly(msg, () => {
                                         bot.channels.fetch(IDs.channels.announcements).then(channel => {
 											channel.send(
 												"Hey, @everyone. It's me, Doc Bot.\n\nOn " + fullDate(new Date(new Date().getTime() + 9e7)) +
@@ -484,12 +482,14 @@ bot.on("message", function(msg){
 												"Bye\n-*Doc Bot*"
 											)
 										})
-										break;
-									default:
-										msg.channel.send("@everyone " + args.join(" "))
-								}
+									})
+									break;
+								default:
+									msg.channel.send("@everyone " + args.join(" "))
 							}
-						})
+						} else {
+							modOnly(msg, () => null)
+						}
 						break;
 					case "prepareupdateshutdown":
 						modOnly(msg, () => {
@@ -504,7 +504,7 @@ bot.on("message", function(msg){
 							}, 9e7)
 							let hours = 24,
 								countdown = setInterval(function(){
-									msg.channel.send("Logging off in " + hours-- + " hours.")
+									msg.channel.send(`Logging off in ${hours--} hours.`)
 									if(!(hours-1)){
 										clearInterval(countdown);
 									}
@@ -549,7 +549,7 @@ bot.on("messageReactionAdd", async (reaction, user) => {
 Message ID: ${reaction.message.id}
 Channel: ${reaction.message.channel.name}
 Timestamp: ${new Date(reaction.message.createdTimestamp).toString()}
-Link: https://discordapp.com/channels/${IDs.server}/${reaction.message.channel.id}/${reaction.message.id}
+Link: ${msgLink(reaction.message)}
 
 Please have a look at it.`)
 	}

@@ -1,6 +1,6 @@
 {
 	"name": "doc-bot",
-	"version": "0.5.0",
+	"version": "0.5.1",
 	"description": "Personal bot used in Diriector_Doc's discord server",
 	"main": "index.js",
 	"dependencies": {

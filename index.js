@@ -106,7 +106,9 @@ bot.on("ready", function(){
 		self = bot
 	})
 	bot.users.fetch(IDs.mods[0], false).then(user => {
-		dmMe = user.send
+		dmMe = function(message){
+			user.send(message)
+		}
 	})
 })
 

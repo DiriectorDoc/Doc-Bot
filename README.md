@@ -12,6 +12,7 @@ Syntax | Usage
 [`!commands`](#commands) | Replies with a list of commands
 [`!request`](#request) | Sends a request to the admin
 [`!speedruns`](#speedruns) | Replies with the Brawlhalla Speedrun leaderboards
+[`!wisdom`](#wisdom) | Replies with a quote
 [`!yellatme`](#yellatme) | Yells at the user
 
 ## !about
@@ -56,7 +57,7 @@ Sends a request to the admin depending on the type of request.
 ### Usage
 The syntax for this command is as follows:
 
-    !request [type] [link]
+    !request [type] [arguments]
 
 #### [type]
 The type of request you would like to make.
@@ -65,12 +66,16 @@ Possible types:
 
 * `delete`: Request for deletion of a post
 * `censor`: Request for censorship of a post
+* `wisdom`: Request a quote be added to [`!wisdom`](#wisdom)
 
-#### [link]
-The link to the discord message in question. To get the link of a discord message, right-click on the message then select the "Copy Message Link" option.
+#### [arguments]
+The argument after the `delete` or `censor` request should be the link to the discord message in question. To get the link of a discord message, right-click on the message then select the "Copy Message Link" option.
 
-### Example
+The argument after the `wisom` request should quote you would like to add to the `!wisdom` command. The quote should be in quotation and the author and the year should follow. If the author or the year is unknow, specify that it is unknown.
+
+### Examples
     !request delete https://discordapp.com/channels/123456789012345678/234567890123456789/345678901234567890
+    !request wisdom "Hi there" - John, 2020
 
 ## !speedruns
 Displays the Brawlhalla speedrun leaderboards. The information displayed was copied directly from [speedrun.com/brawlhalla](https://speedrun.com/brawlhalla).
@@ -115,6 +120,12 @@ Horde only<br/>*First ruleset*
     !speedruns horde
 
 >**Note**: If a category only has 1 ruleset, or nad no ruleset at all, the proceeding parameter will be ignored
+
+## !wisdom
+Replies with a random quote, most of which were said by Diriector_Doc himself.
+
+### Usage
+This command does not accept a parameter. Entering anything following the command, even a [help](#help) argument, does nothing.
 
 ## !yellatme
 Replies with the "admin-only command" message. This message is randomly generated each time.

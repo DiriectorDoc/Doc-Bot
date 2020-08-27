@@ -432,7 +432,7 @@ bot.on("message", function(msg){
 											{
 												name: "[ruleset]",
 												value: "Possible rulesets:\n" +
-												"*For Tournament mode*\n`sigs`\n`noSigs` (case sensitive)\n" +
+												"*For Tournament mode*\n`sigs`\n`noSigs`\n" +
 												"*For Horde mode*\n`2p`\n`3p`\n`4p` ",
 												inline: true
 											},
@@ -451,19 +451,19 @@ bot.on("message", function(msg){
 									}))
 									break;
 								case "tournament":
-									rule = args[1].match(/^(no)?sigs$/g) || args[1] == undefined;
-									rule2 = false
-									if(rule === true){
-										rule = ["sigs"]
+									if(args[1]){
+										rule = args[1].match(/^(no)?sigs$/g)[0] || "sigs";
+										rule2 = false;
 									} else {
 										badCommand(msg, command)
 										break;
 									}
 								case "horde":
-									rule = rule || args[1].match(/^[2-4]p$/g) || args[1] == undefined;
-									rule2 = rule2 !== false ? args[2].match(/^wave(11|21|26)$/g) || ["wave26"]:false;
-									if(rule === true){
-										rule = ["2p"]
+									if(args[1]){
+										rule = rule = rule || args[1].match(/^[2-4]p$/g)[0] || "2p";
+										if(args[2] && rule2 !== false){
+											rule2 = args[2].match(/^wave(11|21|26)$/g)[0] || "wave26"
+										}
 									} else {
 										badCommand(msg, command)
 										break;
@@ -479,14 +479,14 @@ bot.on("message", function(msg){
 										description: args[0][0].toUpperCase()+args[0].slice(1) + 
 										` ${
 											rule2 ?
-											rule[0] + ` ${rule2[0].replace(/e([12])/g, "e $1")}` :
-											rule[0] == "sigs" ? "":"No Signatures"
+											rule + ` ${rule2.replace(/e([12])/g, "e $1")}` :
+											rule == "sigs" ? "":"No Signatures"
 										}` +
 										"\n\nLeaderboard from speedrun.com/brawlhalla",
 										fields: getTop3(
 											rule2 ?
-											leaderboard[args[0]][rule[0]][rule2[0]] :
-											leaderboard[args[0]][rule[0]]
+											leaderboard[args[0]][rule[rule2]] :
+											leaderboard[args[0]][rule]
 										),
 										timestamp: new Date()
 									}))

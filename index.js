@@ -101,6 +101,13 @@ function badCommand(msg, command, text){
 	msg.reply(`${text || "You inputted that command incorrectly."} Try again or enter \`!${command}\` for help.`)
 }
 
+/* Sends a deprication warning */
+function depricated(msg){
+	modOnly(msg, () => {
+		msg.reply("That command has bee depricated. You should now, you're the one who depricated it.")
+	})
+}
+
 bot.on("ready", function(){
 	console.log("Doc Bot is online")
 	bot.users.fetch(IDs.bot, false).then(bot => {
@@ -124,12 +131,6 @@ bot.on("ready", function(){
 		})
 	})
 })
-
-function depricated(msg){
-	modOnly(msg, () => {
-		msg.reply("That command has bee depricated. You should now, you're the one who depricated it.")
-	})
-}
 
 bot.on("message", function(msg){
 	if(msg.author.bot)
@@ -526,7 +527,7 @@ bot.on("message", function(msg){
 						}
 						break;
 					case "wisdom":
-						msg.reply(((ob) => `> ${ob.text}\n\u2003\u2014 ${ob.by}`)(pick.apply(quotes)))
+						msg.reply(((ob) => `> ${ob.text}\n\u2003\u2014 ${ob.by}`)(pick.apply(null, quotes)))
 						break;
 					case "yellatme":
 						modOnly(msg, () => null)
@@ -652,4 +653,4 @@ Please have a look at it.`)
 	}
 });
 
-bot.login(process.env.token) // Set by the VPS
+bot.login(process.env.token) // Set by the VPS (process.env.token)

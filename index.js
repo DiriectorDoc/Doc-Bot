@@ -481,7 +481,7 @@ bot.on("message", function(msg){
 											rule2 = "wave26"
 										}
 									} else {
-										rule =  || "2p";
+										rule = "2p";
 									}
 									msg.reply(new Discord.MessageEmbed({
 										title: "Brawlhalla Speedrun Leaderboard",

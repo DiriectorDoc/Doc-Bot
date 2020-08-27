@@ -1,15 +1,16 @@
 const Discord = require("discord.js"),
 	  bot = new Discord.Client({partials: ["MESSAGE", "CHANNEL", "REACTION"]}),
-	  
+
 	  yaml = (link) => require("js-yaml").safeLoad(require("fs").readFileSync(link, "utf8")),
-	  
+
 	  leaderboard = yaml("leaderboards.yml"),
-	  IDs = yaml("IDs.yml");
+	  IDs = yaml("IDs.yml"),
+	  quotes = yaml("quotes.yml");
 
 let self,
 	dmMe;
 
-/* Randomly picks on of and of the given parameters */
+/* Randomly picks one of and of the given parameters */
 function pick(){
 	return arguments[Math.round(Math.random()*arguments.length)]
 }
@@ -110,7 +111,25 @@ bot.on("ready", function(){
 			user.send(message)
 		}
 	})
+	bot.channels.fetch(IDs.channels.promotion).then(channel => {
+		channel.messages.fetch().then(async messages => {
+			for(let msg of messages.array()){
+				msg.delete({
+					timeout: 864e5 - (new Date).getTime() + msg.createdTimestamp,
+					reason: "Automatic. Promotions are deleted after 24 hours."
+				}).then(msg => {
+					console.log(`Preparing to delete ${msg.id}`)
+				})
+			}
+		})
+	})
 })
+
+function depricated(msg){
+	modOnly(msg, () => {
+		msg.reply("That command has bee depricated. You should now, you're the one who depricated it.")
+	})
+}
 
 bot.on("message", function(msg){
 	if(msg.author.bot)
@@ -129,6 +148,8 @@ bot.on("message", function(msg){
 			msg.delete({
 				timeout: 864e5,
 				reason: "Automatic. Promotions are deleted after 24 hours."
+			}).then(msg => {
+				console.log(`Preparing to delete ${msg.id}`)
 			})
 			return;
 		case "console":
@@ -154,8 +175,8 @@ bot.on("message", function(msg){
 							fields: [
 								{
 									name: "Version",
-                  value: "0.5.1",
-                  inline: true
+									value: "0.6.0",
+									inline: true
 								},
 								{
 									name: "Creator",
@@ -313,16 +334,35 @@ bot.on("message", function(msg){
 										fields: [
 											{
 												name: "Syntax",
-												value: "`!request [type] [link]`"
+												value: "`!request [type] [arguments]`"
 											},
 											{
 												name: "[type]",
-												value: "Possible types:\n`delete`",
+												value: "Possible types:\n`delete`\n`censor` (same a `delete`)\n`wisdom`"
+											},
+											{
+												name: "`delete` or `censor`",
+												value: "Use this command followed by a link to request the removal of a message.",
 												inline: true
 											},
 											{
-												name: "[link]",
-												value: "The link of the discord message for which you are making the request",
+												name: "Example",
+												value: "`!request delete https://discordapp.com/channels/123/456/789`",
+												inline: true
+											},
+											{
+												name: '\u200B',
+												value: '\u200B',
+												inline: true
+											},
+											{
+												name: "`wisdom`",
+												value: "Request a quote be added to the `!wisdom` command.",
+												inline: true
+											},
+											{
+												name: "Example",
+												value: '`!request wisdom "I like food" - dave, 2020`',
 												inline: true
 											}
 										],
@@ -339,7 +379,7 @@ bot.on("message", function(msg){
 													`A user has requested the ${args[0] == "delete" ? "deletion":"censorship"} of a post.\n---------\n` +
 													`Message ID: ${link[3]}\n` +
 													`Channel: ${channel.name}\n` +
-													`Timestamp: ${new Date(message.createdTimestamp).toString()}\n` +
+													`Timestamp: ${new Date(message.createdTimestamp).toString().replace(/GMT\+0000/g, "UTC±00:00")}\n` +
 													`Link: ${link[0]}\n\n` +
 													"Please have a look at it"
 												)
@@ -349,6 +389,14 @@ bot.on("message", function(msg){
 										msg.reply("Could not identify provied link. Please make sure the last parameter is, in fact, the correct link.")
 									}
 									break;
+								case "wisdom":
+									dmMe(
+										"A user has requested wisdom be added to the `!wisdom` command:" +
+										`Quote: ${msg.content.replace(/!request\s+wisdom\s+/g, "")}\n` +
+										`Timestamp: ${new Date(msg.createdTimestamp).toString().replace(/GMT\+0000/g, "UTC±00:00")}\n` +
+										`Link: ${msgLink(msg)}\n\n` +
+										"Please have a look at it"
+									)
 							}
 						} else {
 							badCommand(msg, command)
@@ -462,15 +510,21 @@ bot.on("message", function(msg){
 							badCommand(msg, command, "The syntax for this command has changed.")
 						}
 						break;
+					case "wisdom":
+						msg.reply(((ob) => `> ${ob.text}\n\u2003\u2014 ${ob.by}`)(pick.apply(quotes)))
+						break;
 					case "yellatme":
 						modOnly(msg, () => null)
 						break;
 					case "notify":
+						/*
+							DEPRICATED
+
 						if(arg[0]){
 							switch(arg[0]){
 								case "update":
 									modOnly(msg, () => {
-                                        bot.channels.fetch(IDs.channels.announcements).then(channel => {
+										bot.channels.fetch(IDs.channels.announcements).then(channel => {
 											channel.send(
 												"Hey, @everyone. It's me, Doc Bot.\n\nOn " + fullDate(new Date(new Date().getTime() + 9e7)) +
 												", exactly 25 hours from now, I will be experiencing an update and will not be online. As a result" +
@@ -491,9 +545,13 @@ bot.on("message", function(msg){
 							}
 						} else {
 							modOnly(msg, () => null)
-						}
+						}*/
+						depricated(msg)
 						break;
 					case "prepareupdateshutdown":
+						/*
+							DEPRICATED
+
 						modOnly(msg, () => {
 							msg.channel.send("Preparing shutdown.\nClosing #promotion in 45 minutes.\nLogging off in 25 hours.")
 							setTimeout(function(){
@@ -511,7 +569,8 @@ bot.on("message", function(msg){
 										clearInterval(countdown);
 									}
 								}, 36e5)
-						})
+						})*/
+						depricated(msg)
 						break;
 					case "stop":
 						modOnly(msg, () => {
@@ -521,9 +580,30 @@ bot.on("message", function(msg){
 					case "close":
 					case "open":
 						modOnly(msg, () => {
+							let state = command == "open";
 							bot.channels.fetch(IDs.channels[args[0]]).then(channel => {
-								channel.updateOverwrite(channel.guild.roles.everyone, {"SEND_MESSAGES": command == "open"})
+								channel.updateOverwrite(channel.guild.roles.everyone, {"SEND_MESSAGES": state && args[1] == "--force" ? state : state || null})
 							})
+						})
+						break;
+					case "poll":
+						modOnly(msg, () => {
+							let parts = msg.content.replaceAll(/\s*\|\s*/g, "|").split("|");
+							if(parts[2] && parts[2].match(/^:.+:$/g)){
+								let options;
+								for(var i = 1; i < parts.length; i += 2){
+									if(parts[i] && parts[i+1]){
+										options += `\n${parts[i+1]} \u2014 ${parts[i]}`
+									}
+								}
+								bot.channels.fetch(IDs.channels.announcements).then(channel => {
+									channel.send(`@everyone\n\n${parts[0] + options}`).then(message => {
+										for(var i = 2; i < parts.length; i += 2){
+											message.react(message.guild.emojis.cache.find(emoji => emoji.name === /:(.+):/g.exec(parts[i])[1]))
+										}
+									})
+								})
+							}
 						})
 						break;
 					default:
@@ -550,7 +630,7 @@ bot.on("messageReactionAdd", async (reaction, user) => {
 ---------
 Message ID: ${reaction.message.id}
 Channel: ${reaction.message.channel.name}
-Timestamp: ${new Date(reaction.message.createdTimestamp).toString()}
+Timestamp: ${new Date(reaction.message.createdTimestamp).toString().replace(/GMT\+0000/g, "UTC±00:00")}
 Link: ${msgLink(reaction.message)}
 
 Please have a look at it.`)

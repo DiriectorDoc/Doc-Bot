@@ -124,6 +124,12 @@ bot.on("ready", function(){
     })
 })
 
+function depricated(msg){
+	modOnly(msg, () => {
+		msg.reply("That command has bee depricated. You should now, you're the one who depricated it.")
+	})
+}
+
 bot.on("message", function(msg){
 	if(msg.author.bot)
 		return;
@@ -387,7 +393,7 @@ bot.on("message", function(msg){
 										"A user has requested wisdom be added to the `!wisdom` command:" +
 										`Quote: ${msg.content.replace(/!request\s+wisdom\s+/g, "")}\n` +
 										`Timestamp: ${new Date(msg.createdTimestamp).toString().replace(/GMT\+0000/g, "UTC±00:00")}\n` +
-										`Link: https://discordapp.com/channels/${IDs.server}/${msg.channel.id}/${msg.id}\n\n` +
+										`Link: ${msgLink(msg)}\n\n` +
 										"Please have a look at it"
 									)
 							}
@@ -523,6 +529,9 @@ bot.on("message", function(msg){
 						modOnly(msg, () => null)
 						break;
 					case "notify":
+						/*
+							DEPRICATED
+						
 						if(arg[0]){
 							switch(arg[0]){
 								case "update":
@@ -548,9 +557,13 @@ bot.on("message", function(msg){
 							}
 						} else {
 							modOnly(msg, () => null)
-						}
+						}*/
+						depricated(msg)
 						break;
 					case "prepareupdateshutdown":
+						/*
+							DEPRICATED
+						
 						modOnly(msg, () => {
 							msg.channel.send("Preparing shutdown.\nClosing #promotion in 45 minutes.\nLogging off in 25 hours.")
 							setTimeout(function(){
@@ -568,7 +581,8 @@ bot.on("message", function(msg){
 										clearInterval(countdown);
 									}
 								}, 36e5)
-						})
+						})*/
+						depricated(msg)
 						break;
 					case "stop":
 						modOnly(msg, () => {

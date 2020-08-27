@@ -4,7 +4,8 @@ const Discord = require("discord.js"),
 	  yaml = (link) => require("js-yaml").safeLoad(require("fs").readFileSync(link, "utf8")),
 
 	  leaderboard = yaml("leaderboards.yml"),
-	  IDs = yaml("IDs.yml");
+	  IDs = yaml("IDs.yml"),
+	  quotes = yaml("quotes.yml");
 
 let self,
 	dmMe;
@@ -510,20 +511,7 @@ bot.on("message", function(msg){
 						}
 						break;
 					case "wisdom":
-						const quote = (text, by) => `> ${text}\n\u2003\u2014 ${by}`;
-						msg.reply(pick(
-							quote("The chance of the bread falling with the buttered side down is directly proportional to the cost of the carpet.", "Murthy's law, Unknown year", "Diriector_Doc, 2020"),
-							quote("If you are treated as the dumbest person in the room, maybe you shouldn't be in that room.", "Diriector_Doc, 2020"),
-							quote("Friend come and go, enemies stick around, and victims will avoid you.", "Diriector_Doc, 2020"),
-							quote('"First-world problems" is having a fridge full of food while not knowing what to eat. "Spoiled brat problems" is having a fridge full of food that doesn\'t match your outfit.', "Diriector_Doc, 2020"),
-							quote('"Snitch get stitches" is an inspirational quote because you need stitches to heal certain wounds.', "Diriector_Doc, 2020"),
-							quote('If the opposition replies with "That source isn\'t always correct," they care less about being right and more about winning the argument.', "Diriector_Doc, 2020"),
-							quote("If a job is worth doing, it's worth doing over again.", "Diriector_Doc, 2020"),
-							quote("No one remembers you by your achievements, but by your mistakes.", "Diriector_Doc, 2020"),
-							quote("Indecisiveness is having many different outfits but leaving the house in your pyjamas.", "Diriector_Doc, 2020"),
-							quote("He who invites, pays.", "Diriector_Doc, 2019"),
-							quote("A rich man can meet a broke woman and change her life--But a rich woman won't even look a broke man's way", "21savage, unknown year")
-						))
+						msg.reply(((ob) => `> ${ob.text}\n\u2003\u2014 ${ob.by}`)(pick.apply(quotes)))
 						break;
 					case "yellatme":
 						modOnly(msg, () => null)

@@ -579,30 +579,32 @@ bot.on("message", function(msg){
 						break;
 					case "close":
 					case "open":
-						let state = command == "open";
 						modOnly(msg, () => {
+							let state = command == "open";
 							bot.channels.fetch(IDs.channels[args[0]]).then(channel => {
 								channel.updateOverwrite(channel.guild.roles.everyone, {"SEND_MESSAGES": state && args[1] == "--force" ? state : state || null})
 							})
 						})
 						break;
 					case "poll":
-						let parts = msg.content.replaceAll(/\s*\|\s*/g, "|").split("|");
-						if(parts[2] && parts[2].match(/^:.+:$/g)){
-							let options;
-							for(var i = 1; i < parts.length; i += 2){
-								if(parts[i] && parts[i+1]){
-									options += `\n${parts[i+1]} \u2014 ${parts[i]}`
-								}
-							}
-							bot.channels.fetch(IDs.channels.announcements).then(channel => {
-								channel.send(`@everyone\n\n${parts[0] + options}`).then(message => {
-									for(var i = 2; i < parts.length; i += 2){
-										message.react(message.guild.emojis.cache.find(emoji => emoji.name === /:(.+):/g.exec(parts[i])[1]))
+						modOnly(msg, () => {
+							let parts = msg.content.replaceAll(/\s*\|\s*/g, "|").split("|");
+							if(parts[2] && parts[2].match(/^:.+:$/g)){
+								let options;
+								for(var i = 1; i < parts.length; i += 2){
+									if(parts[i] && parts[i+1]){
+										options += `\n${parts[i+1]} \u2014 ${parts[i]}`
 									}
+								}
+								bot.channels.fetch(IDs.channels.announcements).then(channel => {
+									channel.send(`@everyone\n\n${parts[0] + options}`).then(message => {
+										for(var i = 2; i < parts.length; i += 2){
+											message.react(message.guild.emojis.cache.find(emoji => emoji.name === /:(.+):/g.exec(parts[i])[1]))
+										}
+									})
 								})
-							})
-						}
+							}
+						})
 						break;
 					default:
 						msg.reply("What were you thinking? That's not a command.")

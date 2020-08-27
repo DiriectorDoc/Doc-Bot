@@ -112,17 +112,17 @@ bot.on("ready", function(){
 		}
 	})
 	bot.channels.fetch(IDs.channels.promotion).then(channel => {
-        channel.messages.fetch().then(async messages => {
-            for(let msg of messages.array()){
-                msg.delete({
+		channel.messages.fetch().then(async messages => {
+			for(let msg of messages.array()){
+				msg.delete({
 					timeout: 864e5 - (new Date).getTime() + msg.createdTimestamp,
 					reason: "Automatic. Promotions are deleted after 24 hours."
 				}).then(msg => {
 					console.log(`Preparing to delete ${msg.id}`)
 				})
 			}
-        })
-    })
+		})
+	})
 })
 
 function depricated(msg){
@@ -519,7 +519,7 @@ bot.on("message", function(msg){
 					case "notify":
 						/*
 							DEPRICATED
-						
+
 						if(arg[0]){
 							switch(arg[0]){
 								case "update":
@@ -551,7 +551,7 @@ bot.on("message", function(msg){
 					case "prepareupdateshutdown":
 						/*
 							DEPRICATED
-						
+
 						modOnly(msg, () => {
 							msg.channel.send("Preparing shutdown.\nClosing #promotion in 45 minutes.\nLogging off in 25 hours.")
 							setTimeout(function(){

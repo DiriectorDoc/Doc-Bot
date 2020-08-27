@@ -452,21 +452,36 @@ bot.on("message", function(msg){
 									break;
 								case "tournament":
 									if(args[1]){
-										rule = args[1].match(/^(no)?sigs$/g)[0] || "sigs";
+										try {
+											rule = args[1].match(/^(no)?sigs$/g)[0]
+										} catch(err){
+											badCommand(msg, command)
+											break;
+										}
 										rule2 = false;
 									} else {
-										badCommand(msg, command)
-										break;
+										rule = "sigs"
 									}
 								case "horde":
 									if(args[1]){
-										rule = rule = rule || args[1].match(/^[2-4]p$/g)[0] || "2p";
+										try {
+											rule = rule || args[1].match(/^[2-4]p$/g)[0]
+										} catch(err){
+											badCommand(msg, command)
+											break;
+										}
 										if(args[2] && rule2 !== false){
-											rule2 = args[2].match(/^wave(11|21|26)$/g)[0] || "wave26"
+											try {
+												rule2 = args[2].match(/^wave(11|21|26)$/g)[0]
+											} catch(err){
+												badCommand(msg, command)
+												break;
+											}
+										} else {
+											rule2 = "wave26"
 										}
 									} else {
-										badCommand(msg, command)
-										break;
+										rule =  || "2p";
 									}
 									msg.reply(new Discord.MessageEmbed({
 										title: "Brawlhalla Speedrun Leaderboard",
@@ -588,7 +603,7 @@ bot.on("message", function(msg){
 						break;
 					case "poll":
 						modOnly(msg, () => {
-							let parts = msg.content.replaceAll(/\s*\|\s*/g, "|").split("|");
+							let parts = msg.content.replace(/\s*\|\s*/g, "|").split("|");
 							if(parts[2] && parts[2].match(/^:.+:$/g)){
 								let options;
 								for(var i = 1; i < parts.length; i += 2){

@@ -250,8 +250,8 @@ bot.on("message", function(msg){
 					case "color":
 					case "colour":
 						if(args[0]){
-							let arg = args[0].toLowerCase();
-							switch(arg){
+							let argument = args[0].toLowerCase();
+							switch(argument){
 								case "help":
 								case "options":
 								case "/?":
@@ -264,10 +264,10 @@ bot.on("message", function(msg){
 											name: "Doc Bot",
 											icon_url: self.displayAvatarURL()
 										},
-										description: `Changes the ${arg == "colors" ? "color":"colour"} of your display name.`,
+										description: `Changes the ${argument == "colors" ? "color":"colour"} of your display name.`,
 										fields: [
 											{
-												name: `Availible ${arg == "colors" ? "Colors":"Colours"}`,
+												name: `Availible ${argument == "colors" ? "Colors":"Colours"}`,
 												value: "`red`\n`orange`\n`yellow`\n`green`\n`blue`\n`cyan`\n`purple`\n`violet` (same as purple)\n`pink`\n`white`"
 											}
 										],
@@ -276,7 +276,7 @@ bot.on("message", function(msg){
 									break;
 								default:
 									msg.guild.members.fetch(msg.author.id).then(guildMember => {
-										guildMember.roles.set(IDs.colours[arg] || [])
+										guildMember.roles.set(IDs.colours[argument] || [])
 									})
 							}
 						} else {
@@ -403,10 +403,10 @@ bot.on("message", function(msg){
 						}
 						break;
 					case "speedruns":
-						if(arg[0]){
+						if(args[0]){
 							let rule,
 								rule2;
-							switch(arg[0]){
+							switch(args[0]){
 								case "help":
 								case "options":
 								case "/?":
@@ -520,8 +520,8 @@ bot.on("message", function(msg){
 						/*
 							DEPRICATED
 
-						if(arg[0]){
-							switch(arg[0]){
+						if(args[0]){
+							switch(args[0]){
 								case "update":
 									modOnly(msg, () => {
 										bot.channels.fetch(IDs.channels.announcements).then(channel => {

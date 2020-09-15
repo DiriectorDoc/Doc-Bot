@@ -14,7 +14,7 @@ tournament:
       region: us
     - player: Diriector_Doc
       place: 4
-      time: "3:41"
+      time: "3:39"
       region: ca
     - player: Minayan
       place: 5
@@ -306,14 +306,14 @@ horde:
     wave26:
       -
 tutorial:
-    - player: Zombaxe
+    - player: Captain-No-Beard
       place: 1
+      time: "0:48.89"
+      region: us
+    - player: Zombaxe
+      place: 2
       time: "0:49.91"
       region: ca
-    - player: Captain-No-Beard
-      place: 2
-      time: "0:49.96"
-      region: us
     - player: Venfurge
       place: 3
       time: "0:51.63"

@@ -101,6 +101,13 @@ function badCommand(msg, command, text){
 	msg.reply(`${text || "You inputted that command incorrectly."} Try again or enter \`!${command}\` for help.`)
 }
 
+/* Sends a deprication warning */
+function depricated(msg){
+	modOnly(msg, () => {
+		msg.reply("That command has bee depricated. You should now, you're the one who depricated it.")
+	})
+}
+
 bot.on("ready", function(){
 	console.log("Doc Bot is online")
 	bot.users.fetch(IDs.bot, false).then(bot => {
@@ -124,12 +131,6 @@ bot.on("ready", function(){
 		})
 	})
 })
-
-function depricated(msg){
-	modOnly(msg, () => {
-		msg.reply("That command has bee depricated. You should now, you're the one who depricated it.")
-	})
-}
 
 bot.on("message", function(msg){
 	if(msg.author.bot)
@@ -250,8 +251,8 @@ bot.on("message", function(msg){
 					case "color":
 					case "colour":
 						if(args[0]){
-							let arg = args[0].toLowerCase();
-							switch(arg){
+							let argument = args[0].toLowerCase();
+							switch(argument){
 								case "help":
 								case "options":
 								case "/?":
@@ -264,10 +265,10 @@ bot.on("message", function(msg){
 											name: "Doc Bot",
 											icon_url: self.displayAvatarURL()
 										},
-										description: `Changes the ${arg == "colors" ? "color":"colour"} of your display name.`,
+										description: `Changes the ${argument == "colors" ? "color":"colour"} of your display name.`,
 										fields: [
 											{
-												name: `Availible ${arg == "colors" ? "Colors":"Colours"}`,
+												name: `Availible ${argument == "colors" ? "Colors":"Colours"}`,
 												value: "`red`\n`orange`\n`yellow`\n`green`\n`blue`\n`cyan`\n`purple`\n`violet` (same as purple)\n`pink`\n`white`"
 											}
 										],
@@ -276,7 +277,7 @@ bot.on("message", function(msg){
 									break;
 								default:
 									msg.guild.members.fetch(msg.author.id).then(guildMember => {
-										guildMember.roles.set(IDs.colours[arg] || [])
+										guildMember.roles.set(IDs.colours[argument] || [])
 									})
 							}
 						} else {
@@ -403,10 +404,10 @@ bot.on("message", function(msg){
 						}
 						break;
 					case "speedruns":
-						if(arg[0]){
+						if(args[0]){
 							let rule,
 								rule2;
-							switch(arg[0]){
+							switch(args[0]){
 								case "help":
 								case "options":
 								case "/?":
@@ -432,7 +433,7 @@ bot.on("message", function(msg){
 											{
 												name: "[ruleset]",
 												value: "Possible rulesets:\n" +
-												"*For Tournament mode*\n`sigs`\n`noSigs` (case sensitive)\n" +
+												"*For Tournament mode*\n`sigs`\n`noSigs`\n" +
 												"*For Horde mode*\n`2p`\n`3p`\n`4p` ",
 												inline: true
 											},
@@ -451,22 +452,37 @@ bot.on("message", function(msg){
 									}))
 									break;
 								case "tournament":
-									rule = args[1].match(/^(no)?sigs$/g) || args[1] == undefined;
-									rule2 = false
-									if(rule === true){
-										rule = ["sigs"]
+									if(args[1]){
+										try {
+											rule = args[1].match(/^(no)?sigs$/g)[0]
+										} catch(err){
+											badCommand(msg, command)
+											break;
+										}
+										rule2 = false;
 									} else {
-										badCommand(msg, command)
-										break;
+										rule = "sigs"
 									}
 								case "horde":
-									rule = rule || args[1].match(/^[2-4]p$/g) || args[1] == undefined;
-									rule2 = rule2 !== false ? args[2].match(/^wave(11|21|26)$/g) || ["wave26"]:false;
-									if(rule === true){
-										rule = ["2p"]
+									if(args[1]){
+										try {
+											rule = rule || args[1].match(/^[2-4]p$/g)[0]
+										} catch(err){
+											badCommand(msg, command)
+											break;
+										}
+										if(args[2] && rule2 !== false){
+											try {
+												rule2 = args[2].match(/^wave(11|21|26)$/g)[0]
+											} catch(err){
+												badCommand(msg, command)
+												break;
+											}
+										} else {
+											rule2 = "wave26"
+										}
 									} else {
-										badCommand(msg, command)
-										break;
+										rule = "2p";
 									}
 									msg.reply(new Discord.MessageEmbed({
 										title: "Brawlhalla Speedrun Leaderboard",
@@ -479,14 +495,14 @@ bot.on("message", function(msg){
 										description: args[0][0].toUpperCase()+args[0].slice(1) + 
 										` ${
 											rule2 ?
-											rule[0] + ` ${rule2[0].replace(/e([12])/g, "e $1")}` :
-											rule[0] == "sigs" ? "":"No Signatures"
+											rule + ` ${rule2.replace(/e([12])/g, "e $1")}` :
+											rule == "sigs" ? "":"No Signatures"
 										}` +
 										"\n\nLeaderboard from speedrun.com/brawlhalla",
 										fields: getTop3(
 											rule2 ?
-											leaderboard[args[0]][rule[0]][rule2[0]] :
-											leaderboard[args[0]][rule[0]]
+											leaderboard[args[0]][rule[rule2]] :
+											leaderboard[args[0]][rule]
 										),
 										timestamp: new Date()
 									}))
@@ -520,8 +536,8 @@ bot.on("message", function(msg){
 						/*
 							DEPRICATED
 
-						if(arg[0]){
-							switch(arg[0]){
+						if(args[0]){
+							switch(args[0]){
 								case "update":
 									modOnly(msg, () => {
 										bot.channels.fetch(IDs.channels.announcements).then(channel => {
@@ -588,7 +604,7 @@ bot.on("message", function(msg){
 						break;
 					case "poll":
 						modOnly(msg, () => {
-							let parts = msg.content.replaceAll(/\s*\|\s*/g, "|").split("|");
+							let parts = msg.content.replace(/\s*\|\s*/g, "|").split("|");
 							if(parts[2] && parts[2].match(/^:.+:$/g)){
 								let options;
 								for(var i = 1; i < parts.length; i += 2){
@@ -637,4 +653,4 @@ Please have a look at it.`)
 	}
 });
 
-bot.login(process.env.token) // Set by the VPS
+bot.login(process.env.token) // Set by the VPS (process.env.token)

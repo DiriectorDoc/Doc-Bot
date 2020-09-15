@@ -175,7 +175,7 @@ bot.on("message", function(msg){
 							fields: [
 								{
 									name: "Version",
-									value: "0.6.0",
+									value: "0.6.1",
 									inline: true
 								},
 								{
@@ -391,7 +391,7 @@ bot.on("message", function(msg){
 									break;
 								case "wisdom":
 									dmMe(
-										"A user has requested wisdom be added to the `!wisdom` command:" +
+										"A user has requested wisdom be added to the `!wisdom` command:\n" +
 										`Quote: ${msg.content.replace(/!request\s+wisdom\s+/g, "")}\n` +
 										`Timestamp: ${new Date(msg.createdTimestamp).toString().replace(/GMT\+0000/g, "UTC±00:00")}\n` +
 										`Link: ${msgLink(msg)}\n\n` +
@@ -511,7 +511,7 @@ bot.on("message", function(msg){
 						}
 						break;
 					case "wisdom":
-						msg.reply(((ob) => `> ${ob.text}\n\u2003\u2014 ${ob.by}`)(pick.apply(quotes)))
+						msg.reply(((ob) => `\n> ${ob.text}\n\u2003\u2014 ${ob.by.replace("\n", "")}`)(pick.apply(null, quotes)))
 						break;
 					case "yellatme":
 						modOnly(msg, () => null)

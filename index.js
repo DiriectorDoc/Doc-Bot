@@ -12,7 +12,7 @@ let self,
 
 /* Randomly picks one of and of the given parameters */
 function pick(){
-	return arguments[Math.round(Math.random()*arguments.length)]
+	return arguments[Math.random()*arguments.length|0]
 }
 
 /* Turns a date into a neatly formated date and time to be used in a sentence */
@@ -122,7 +122,7 @@ bot.on("ready", function(){
 		channel.messages.fetch().then(async messages => {
 			for(let msg of messages.array()){
 				msg.delete({
-					timeout: 864e5 - (new Date).getTime() + msg.createdTimestamp,
+					timeout: 864e5 - Date.now() + msg.createdTimestamp,
 					reason: "Automatic. Promotions are deleted after 24 hours."
 				}).then(msg => {
 					console.log(`Preparing to delete ${msg.id}`)
@@ -176,7 +176,7 @@ bot.on("message", function(msg){
 							fields: [
 								{
 									name: "Version",
-									value: "0.6.1",
+									value: "0.6.2",
 									inline: true
 								},
 								{

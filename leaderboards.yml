@@ -366,23 +366,23 @@ tutorial:
       place: 15
       time: "1:02.52"
       region: us
-    - player: WaifuMaterial
+    - player: Lok1f
       place: 16
+      time: "1:18.85"
+      region: by
+    - player: WaifuMaterial
+      place: 17
       time: "1:07.40"
       region: us
     - player: Aven198
-      place: 17
+      place: 18
       time: "1:10.14"
       region: fr
     - player: Blatopa
-      place: 18
+      place: 19
       time: "1:10.44"
       region: de
     - player: Pathologyc
-      place: 19
+      place: 20
       time: "1:18.00"
       region: cl
-    - player: Tribunion
-      place: 20
-      time: "1:18.85"
-      region: de

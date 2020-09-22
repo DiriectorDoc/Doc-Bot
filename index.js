@@ -62,7 +62,7 @@ function getTop3(cat){
 	let fields = [];
 	for(var i = 0; i < 3; i++){
 		fields.push({
-			name: `${cat[i].place + ([, "st", "nd", "rd"][cat[i].place] || "th")} ${cat[i].time}`,
+			name: `${cat[i].place}${[, "st", "nd", "rd"][cat[i].place] || "th"} ${cat[i].time}`,
 			value: `:flag_${cat[i].region}:${cat[i].player || cat[i].players.join(", ")}`,
 			inline: true
 		})
@@ -176,7 +176,7 @@ bot.on("message", function(msg){
 							fields: [
 								{
 									name: "Version",
-									value: "0.6.2",
+									value: "0.7.0",
 									inline: true
 								},
 								{
@@ -248,6 +248,12 @@ bot.on("message", function(msg){
 							timestamp: new Date()
 						}))
 						break;
+					case "bug":
+						msg.reply(
+							"To report a bug, please visit https://github.com/DiriectorDoc/Doc-Bot/issues/new?assignees=&labels=bug&template=bug_report.md&title=" +
+							"\n\nOr let me know in #talk-to-the-doc"
+						)
+						break;
 					case "color":
 					case "colour":
 						if(args[0]){
@@ -258,6 +264,7 @@ bot.on("message", function(msg){
 								case "/?":
 								case "colors":
 								case "colours":
+									let colour = command == "color" ? "color":"colour"
 									msg.reply(new Discord.MessageEmbed({
 										title: "Commands",
 										color: 0x3498DB,
@@ -265,10 +272,10 @@ bot.on("message", function(msg){
 											name: "Doc Bot",
 											icon_url: self.displayAvatarURL()
 										},
-										description: `Changes the ${argument == "colors" ? "color":"colour"} of your display name.`,
+										description: `Changes the ${colour} of your display name.`,
 										fields: [
 											{
-												name: `Availible ${argument == "colors" ? "Colors":"Colours"}`,
+												name: `Availible ${colour}s`,
 												value: "`red`\n`orange`\n`yellow`\n`green`\n`blue`\n`cyan`\n`purple`\n`violet` (same as purple)\n`pink`\n`white`"
 											}
 										],
@@ -531,62 +538,6 @@ bot.on("message", function(msg){
 						break;
 					case "yellatme":
 						modOnly(msg, () => null)
-						break;
-					case "notify":
-						/*
-							DEPRICATED
-
-						if(args[0]){
-							switch(args[0]){
-								case "update":
-									modOnly(msg, () => {
-										bot.channels.fetch(IDs.channels.announcements).then(channel => {
-											channel.send(
-												"Hey, @everyone. It's me, Doc Bot.\n\nOn " + fullDate(new Date(new Date().getTime() + 9e7)) +
-												", exactly 25 hours from now, I will be experiencing an update and will not be online. As a result" +
-												", a few channels will close to prevent unqueued processes when I go back online.\n" +
-
-												"The #promotion channel will close in 45 minutes from now, preventing anyone from posting " +
-												"to the channel. However, it will still remain visable to everyone.\n" +
-
-												"Thank you for your understanding. When I return, I will have more to offer.\n\n" +
-
-												"Bye\n-*Doc Bot*"
-											)
-										})
-									})
-									break;
-								default:
-									msg.channel.send("@everyone " + args.join(" "))
-							}
-						} else {
-							modOnly(msg, () => null)
-						}*/
-						depricated(msg)
-						break;
-					case "prepareupdateshutdown":
-						/*
-							DEPRICATED
-
-						modOnly(msg, () => {
-							msg.channel.send("Preparing shutdown.\nClosing #promotion in 45 minutes.\nLogging off in 25 hours.")
-							setTimeout(function(){
-								bot.channels.fetch(IDs.channels.promotion).then(channel => {
-									channel.updateOverwrite(channel.guild.roles.everyone, {"SEND_MESSAGES": false})
-								})
-							}, 27e5)
-							setTimeout(function(){
-								throw "Doc Bot has been sucessfully stopped."
-							}, 9e7)
-							let hours = 24,
-								countdown = setInterval(function(){
-									msg.channel.send(`Logging off in ${hours--} hours.`)
-									if(!(hours-1)){
-										clearInterval(countdown);
-									}
-								}, 36e5)
-						})*/
-						depricated(msg)
 						break;
 					case "stop":
 						modOnly(msg, () => {

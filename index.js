@@ -464,7 +464,7 @@ bot.on("message", function(msg){
 											},
 											{
 												name: "Notes",
-												value: "The `tutorial%` category has no ruleset subcategories. Addition parameters proceding the command will have no effect."
+												value: "The `tutorial%` category has no ruleset subcategories. Additional parameters proceding the command will be ignored."
 											}
 										],
 										timestamp: new Date()

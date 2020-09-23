@@ -17,9 +17,10 @@ function pick(){
 
 /* Turns a date into a neatly formated date and time to be used in a sentence */
 function fullDate(date) {
-	return ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][date.getUTCDay()] +
-		`, ${["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][date.getUTCMonth()]} ` +
-		`${date.getUTCDate()}, ${date.getUTCFullYear()}, at ${date.getUTCHours()}:${date.getUTCMinutes()} UTC`
+	return `${
+	["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][date.getUTCDay()]}, ${
+	["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][date.getUTCMonth()]} ${
+	date.getUTCDate()}, ${date.getUTCFullYear()}, at ${date.getUTCHours()}:${date.getUTCMinutes()} UTC`
 }
 
 /* Checks who entered the command. If it was an admin, it executes the callback. Else, it replies with a randomly generated message. */
@@ -176,7 +177,7 @@ bot.on("message", function(msg){
 							fields: [
 								{
 									name: "Version",
-									value: "0.7.0",
+									value: "0.7.1",
 									inline: true
 								},
 								{

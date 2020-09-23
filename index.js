@@ -302,24 +302,36 @@ bot.on("message", function(msg){
 							description: "list of commands",
 							fields: [
 								{
-									name: "Commands",
-									value: "`!about`\n" +
-									"`!color`\n" +
-									"`!commands`\n" +
-									"`!request`\n" +
-									"`!speedruns`\n" +
-									"`!yellatme`",
-									inline: true
+									name: "`!about`",
+									value: "Displays information about me, Doc Bot"
 								},
 								{
-									name: "Purpose",
-									value: "Displays information about me, Doc Bot\n" +
-									"Changes display name color\n" +
-									"Displays this here list\n" +
-									"Sends a request to D_Doc\n" +
-									"Displays Brawlhalla speedrun leaderboatrds\n" +
-									"Yells at you",
-									inline: true
+									name: "`!bug`",
+									value: "Replies with a link for submitting a bug"
+								},
+								{
+									name: "`!color`",
+									value: "Changes display name color"
+								}, 
+								{
+									name: "`!commands`",
+									value: "Displays this here list"
+								},
+								{
+									name: "`!request`",
+									value: "Sends a request to D_Doc"
+								},
+								{
+									name: "`!speedruns`",
+									value: "Displays Brawlhalla speedrun leaderboards"
+								}, 
+								{
+									name: "`!yellatme`",
+									value: "Displays the 'admin only command' message"
+								}, 
+								{
+									name: "`!wisdom`",
+									value: "Displayes a random quote"
 								}
 							],
 							timestamp: new Date()

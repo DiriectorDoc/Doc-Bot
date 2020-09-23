@@ -27,24 +27,24 @@ function modOnly(msg, call){
 	if(IDs.mods.some(id => id === msg.author.id)){
 		call()
 	} else {
-		msg.reply(
+		msg.reply(`${
 			pick(
-				"Excuse me? ",
-				"Ah, ah, ah. ",
-				"What are you doing? ",
-				"Stop right there! ",
+				"Excuse me?",
+				"Ah, ah, ah.",
+				"What are you doing?",
+				"Stop right there!",
 				"Um...",
-				"Um, no. ",
-				"Hold it! ",
-				"I don't think so. "
-			) +
+				"Um, no.",
+				"Hold it!",
+				"I don't think so."
+			)} ${
 			pick(
-				"Are you an admin? No? I didn't think so. ",
-				"You need to be an admin to use that command. ",
-				"Only admins can do that. ",
-				"You tried, but that's an admin-only command. ",
-				"Last time I checked, you aren't an admin. "
-			) +
+				"Are you an admin? No? I didn't think so.",
+				"You need to be an admin to use that command.",
+				"Only admins can do that.",
+				"You tried, but that's an admin-only command.",
+				"Last time I checked, you aren't an admin."
+			)} ${
 			pick(
 				"Lay of the admin commands, m'kay?",
 				"Try a different command, you might have some luck.",
@@ -53,7 +53,7 @@ function modOnly(msg, call){
 				"Sorry, but you'll have to make do with some other commands.",
 				"There's a huge list of other `!commands`. Use them instead."
 			)
-		)
+		}`)
 	}
 }
 

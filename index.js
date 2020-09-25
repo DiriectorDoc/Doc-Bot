@@ -1,14 +1,22 @@
+console.info("Caching packages")
+
 const Discord = require("discord.js"),
+	  fetch = require("node-fetch"),
+	  
 	  bot = new Discord.Client({partials: ["MESSAGE", "CHANNEL", "REACTION"]}),
 
 	  yaml = (link) => require("js-yaml").safeLoad(require("fs").readFileSync(link, "utf8")),
 
-	  leaderboard = yaml("leaderboards.yml"),
 	  IDs = yaml("IDs.yml"),
 	  quotes = yaml("quotes.yml");
 
 let self,
-	dmMe;
+	dmMe,
+	
+	leaderboard;
+(async function(){
+	leaderboard = await require("./leaderboard");
+})()
 
 /* Randomly picks one of and of the given parameters */
 function pick(){
@@ -615,6 +623,6 @@ Link: ${msgLink(reaction.message)}
 
 Please have a look at it.`)
 	}
-});
+})
 
-bot.login(process.env.token) // Set by the VPS (process.env.token)
+bot.login("NzQ1Njg5MzkxMTQ5NjEzMDU3.Xz1bXQ.39N5xN7Lxa_0I8bHb9QuO5292xQ") // Set by the VPS (process.env.token)

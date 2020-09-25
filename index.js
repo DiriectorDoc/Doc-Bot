@@ -625,4 +625,4 @@ Please have a look at it.`)
 	}
 })
 
-bot.login("NzQ1Njg5MzkxMTQ5NjEzMDU3.Xz1bXQ.39N5xN7Lxa_0I8bHb9QuO5292xQ") // Set by the VPS (process.env.token)
+bot.login(process.env.token) // Set by the VPS ()

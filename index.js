@@ -431,6 +431,7 @@ bot.on("message", function(msg){
 							badCommand(msg, command)
 						}
 						break;
+					case "speedrun":
 					case "speedruns":
 						if(args[0]){
 							let rule,
@@ -487,19 +488,18 @@ bot.on("message", function(msg){
 											badCommand(msg, command)
 											break;
 										}
-										rule2 = false;
 									} else {
-										rule = "sigs"
+										rule = "sigs";
 									}
 								case "horde":
-									if(args[1]){
+									if(args[1] && !rule){
 										try {
-											rule = rule || args[1].match(/^[2-4]p$/g)[0]
+											rule = args[1].match(/^[2-4]p$/g)[0]
 										} catch(err){
 											badCommand(msg, command)
 											break;
 										}
-										if(args[2] && rule2 !== false){
+										if(args[2] && !rule2){
 											try {
 												rule2 = args[2].match(/^wave(11|21|26)$/g)[0]
 											} catch(err){
@@ -507,10 +507,11 @@ bot.on("message", function(msg){
 												break;
 											}
 										} else {
-											rule2 = "wave26"
+											rule2 = "wave11"
 										}
-									} else {
+									} else if(rule === undefined){
 										rule = "2p";
+										rule2 = "wave11"
 									}
 									msg.reply(new Discord.MessageEmbed({
 										title: "Brawlhalla Speedrun Leaderboard",
@@ -523,13 +524,13 @@ bot.on("message", function(msg){
 										description: args[0][0].toUpperCase()+args[0].slice(1) + 
 										` ${
 											rule2 ?
-											rule + ` ${rule2.replace(/e([12])/g, "e $1")}` :
+											rule + ` ${rule2.replace(/wave([12])/g, "Wave $1")}` :
 											rule == "sigs" ? "":"No Signatures"
 										}` +
 										"\n\nLeaderboard from speedrun.com/brawlhalla",
 										fields: getTop3(
 											rule2 ?
-											leaderboard[args[0]][rule[rule2]] :
+											leaderboard[args[0]][rule][rule2] :
 											leaderboard[args[0]][rule]
 										),
 										timestamp: new Date()

@@ -486,10 +486,10 @@ bot.on("message", function(msg){
 											rule = args[1].match(/^(no)?sigs$/g)[0]
 										} catch(err){
 											badCommand(msg, command)
-											break;
+											break
 										}
 									} else {
-										rule = "sigs";
+										rule = "sigs"
 									}
 								case "horde":
 									if(args[1] && !rule){
@@ -497,14 +497,14 @@ bot.on("message", function(msg){
 											rule = args[1].match(/^[2-4]p$/g)[0]
 										} catch(err){
 											badCommand(msg, command)
-											break;
+											break
 										}
 										if(args[2] && !rule2){
 											try {
 												rule2 = args[2].match(/^wave(11|21|26)$/g)[0]
 											} catch(err){
 												badCommand(msg, command)
-												break;
+												break
 											}
 										} else {
 											rule2 = "wave11"

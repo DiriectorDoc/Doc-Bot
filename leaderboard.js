@@ -4,7 +4,12 @@ module.exports = new Promise(resolve => {
 	let leaderboard = {tournament:{sigs:[],nosigs:[]},horde:{"2p":{wave11:[],wave21:[],wave26:[]},"3p":{wave11:[],wave21:[],wave26:[]},"4p":{wave11:[],wave21:[],wave26:[]}},tutorial:[]},
 		NA = [,,,].fill({player: "<name>", place: 0, time: "N/A", region: "black"}),
 
-		loaded = 0;
+		loaded = 0,
+		
+		time = t => `${t/60|0}:${t%60}` || "N/A",
+		name = p => p.names.international || "<name>",
+		region = p => (p.location || {country:0}).country.code || "black",
+		place = r => r.place || 0;
 
 	console.group("Fetching leaderboard")
 	/*
@@ -17,37 +22,34 @@ module.exports = new Promise(resolve => {
 		.then(res => res.json())
 		.then(json => {
 			console.info("Tournament/Sigs")
-			let runs = json.data.runs,
-				time0 = runs[0].run.times.primary_t,
-				time1 = runs[1].run.times.primary_t,
-				time2 = runs[2].run.times.primary_t;
+			let runs = json.data.runs;
 			fetch(runs[0].run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
 				let player = json.data
 				leaderboard.tournament.sigs[0] = {
-					player: player.names.international || "<name>",
-					region: (player.location || {country:0}).country.code || "black",
-					place: runs[0].place || 0,
-					time: `${time0/60|0}:${time0%60}` || "N/A"
+					player: name(player),
+					region: region(player),
+					place: place(runs[0]),
+					time: time(runs[0].run.times.primary_t)
 				}
 				loaded++
 			})
 			fetch(runs[1].run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
 				let player = json.data
 				leaderboard.tournament.sigs[1] = {
-					player: player.names.international || "<name>",
-					region: (player.location || {country:0}).country.code || "black",
-					place: runs[1].place || 0,
-					time: `${time1/60|0}:${time1%60}` || "N/A"
+					player: name(player),
+					region: region(player),
+					place: place(runs[1]),
+					time: time(runs[1].run.times.primary_t)
 				}
 				loaded++
 			})
 			fetch(runs[2].run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
 				let player = json.data
 				leaderboard.tournament.sigs[2] = {
-					player: player.names.international || "<name>",
-					region: (player.location || {country:0}).country.code || "black",
-					place: runs[2].place || 0,
-					time: `${time2/60|0}:${time2%60}` || "N/A"
+					player: name(player),
+					region: region(player),
+					place: place(runs[2]),
+					time: time(runs[2].run.times.primary_t)
 				}
 				loaded++
 			})
@@ -61,37 +63,34 @@ module.exports = new Promise(resolve => {
 		.then(res => res.json())
 		.then(json => {
 			console.info("Tournament/NoSigs")
-			let runs = json.data.runs,
-				time0 = runs[0].run.times.primary_t,
-				time1 = runs[1].run.times.primary_t,
-				time2 = runs[2].run.times.primary_t;
+			let runs = json.data.runs;
 			fetch(runs[0].run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
 				let player = json.data
 				leaderboard.tournament.nosigs[0] = {
-					player: player.names.international || "<name>",
-					region: (player.location || {country:0}).country.code || "black",
-					place: runs[0].place || 0,
-					time: `${time0/60|0}:${time0%60}` || "N/A"
+					player: name(player),
+					region: region(player),
+					place: place(runs[0]),
+					time: time(runs[0].run.times.primary_t)
 				}
 				loaded++
 			})
 			fetch(runs[1].run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
 				let player = json.data
 				leaderboard.tournament.nosigs[1] = {
-					player: player.names.international || "<name>",
-					region: (player.location || {country:0}).country.code || "black",
-					place: runs[1].place || 0,
-					time: `${time1/60|0}:${time1%60}` || "N/A"
+					player: name(player),
+					region: region(player),
+					place: place(runs[1]),
+					time: time(runs[1].run.times.primary_t)
 				}
 				loaded++
 			})
 			fetch(runs[2].run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
 				let player = json.data
 				leaderboard.tournament.nosigs[2] = {
-					player: player.names.international || "<name>",
-					region: (player.location || {country:0}).country.code || "black",
-					place: runs[2].place || 0,
-					time: `${time2/60|0}:${time2%60}` || "N/A"
+					player: name(player),
+					region: region(player),
+					place: place(runs[2]),
+					time: time(runs[2].run.times.primary_t)
 				}
 				loaded++
 			})
@@ -105,37 +104,34 @@ module.exports = new Promise(resolve => {
 		.then(res => res.json())
 		.then(json => {
 			console.info("Tutorial%")
-			let runs = json.data.runs,
-				time0 = runs[0].run.times.primary_t,
-				time1 = runs[1].run.times.primary_t,
-				time2 = runs[2].run.times.primary_t;
+			let runs = json.data.runs;
 			fetch(runs[0].run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
 				let player = json.data
 				leaderboard.tutorial[0] = {
-					player: player.names.international || "<name>",
-					region: (player.location || {country:0}).country.code || "black",
-					place: runs[0].place || 0,
-					time: `${time0/60|0}:${time0%60}` || "N/A"
+					player: name(player),
+					region: region(player),
+					place: place(runs[0]),
+					time: time(runs[0].run.times.primary_t)
 				}
 				loaded++
 			})
 			fetch(runs[1].run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
 				let player = json.data
 				leaderboard.tutorial[1] = {
-					player: player.names.international || "<name>",
-					region: (player.location || {country:0}).country.code || "black",
-					place: runs[1].place || 0,
-					time: `${time1/60|0}:${time1%60}` || "N/A"
+					player: name(player),
+					region: region(player),
+					place: place(runs[1]),
+					time: time(runs[1].run.times.primary_t)
 				}
 				loaded++
 			})
 			fetch(runs[2].run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
 				let player = json.data
 				leaderboard.tutorial[2] = {
-					player: player.names.international || "<name>",
-					region: (player.location || {country:0}).country.code || "black",
-					place: runs[2].place || 0,
-					time: `${time2/60|0}:${time2%60}` || "N/A"
+					player: name(player),
+					region: region(player),
+					place: place(runs[2]),
+					time: time(runs[2].run.times.primary_t)
 				}
 				loaded++
 			})
@@ -149,34 +145,31 @@ module.exports = new Promise(resolve => {
 		.then(res => res.json())
 		.then(json => {
 			console.info("Horde/2 Players/Wave 11")
-			let runs = json.data.runs,
-				time0 = runs[0].run.times.primary_t,
-				time1 = runs[1].run.times.primary_t,
-				time2 = runs[2].run.times.primary_t;
+			let runs = json.data.runs;
 			leaderboard.horde["2p"].wave11[0] = {
 				players: [],
-				place: runs[0].place || 0,
-				time: `${time0/60|0}:${time0%60}` || "N/A"
+				place: place(runs[0]),
+				time: time(runs[0].run.times.primary_t)
 			}
 			leaderboard.horde["2p"].wave11[1] = {
 				players: [],
-				place: runs[1].place || 0,
-				time: `${time1/60|0}:${time1%60}` || "N/A"
+				place: place(runs[1]),
+				time: time(runs[1].run.times.primary_t)
 			}
 			leaderboard.horde["2p"].wave11[2] = {
 				players: [],
-				place: runs[2].place || 0,
-				time: `${time2/60|0}:${time2%60}` || "N/A"
+				place: place(runs[2]),
+				time: time(runs[2].run.times.primary_t)
 			}
 			fetch(runs[0].run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
 				let player = json.data;
-				leaderboard.horde["2p"].wave11[0].region = (player.location || {country:0}).country.code || "black";
-				leaderboard.horde["2p"].wave11[0].players.push(player.names.international || "<name>")
+				leaderboard.horde["2p"].wave11[0].region = region(player);
+				leaderboard.horde["2p"].wave11[0].players.push(name(player))
 				loaded++
 			})
 			if(runs[0].run.players[1]){
 				fetch(runs[0].run.players[1].uri, {method: "Get"}).then(res => res.json()).then(json => {
-					leaderboard.horde["2p"].wave11[0].players.push(json.data.names.international || "<name>")
+					leaderboard.horde["2p"].wave11[0].players.push(name(json.data))
 					loaded++
 				})
 			} else {
@@ -184,13 +177,13 @@ module.exports = new Promise(resolve => {
 			}
 			fetch(runs[1].run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
 				let player = json.data;
-				leaderboard.horde["2p"].wave11[1].region = (player.location || {country:0}).country.code || "black";
-				leaderboard.horde["2p"].wave11[1].players.push(player.names.international || "<name>")
+				leaderboard.horde["2p"].wave11[1].region = region(player);
+				leaderboard.horde["2p"].wave11[1].players.push(name(player))
 				loaded++
 			})
 			if(runs[1].run.players[1]){
 				fetch(runs[1].run.players[1].uri, {method: "Get"}).then(res => res.json()).then(json => {
-					leaderboard.horde["2p"].wave11[1].players.push(json.data.names.international || "<name>")
+					leaderboard.horde["2p"].wave11[1].players.push(name(json.data))
 					loaded++
 				})
 			} else {
@@ -198,13 +191,13 @@ module.exports = new Promise(resolve => {
 			}
 			fetch(runs[2].run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
 				let player = json.data;
-				leaderboard.horde["2p"].wave11[2].region = (player.location || {country:0}).country.code || "black";
-				leaderboard.horde["2p"].wave11[2].players.push(player.names.international || "<name>")
+				leaderboard.horde["2p"].wave11[2].region = region(player);
+				leaderboard.horde["2p"].wave11[2].players.push(name(player))
 				loaded++
 			})
 			if(runs[2].run.players[2]){
 				fetch(runs[2].run.players[2].uri, {method: "Get"}).then(res => res.json()).then(json => {
-					leaderboard.horde["2p"].wave11[2].players.push(json.data.names.international || "<name>")
+					leaderboard.horde["2p"].wave11[2].players.push(name(json.data))
 					loaded++
 				})
 			} else {
@@ -220,34 +213,31 @@ module.exports = new Promise(resolve => {
 		.then(res => res.json())
 		.then(json => {
 			console.info("Horde/2 Players/Wave 21")
-			let runs = json.data.runs,
-				time0 = runs[0].run.times.primary_t,
-				time1 = runs[1].run.times.primary_t,
-				time2 = runs[2].run.times.primary_t;
+			let runs = json.data.runs;
 			leaderboard.horde["2p"].wave21[0] = {
 				players: [],
-				place: runs[0].place || 0,
-				time: `${time0/60|0}:${time0%60}` || "N/A"
+				place: place(runs[0]),
+				time: time(runs[0].run.times.primary_t)
 			}
 			leaderboard.horde["2p"].wave21[1] = {
 				players: [],
-				place: runs[1].place || 0,
-				time: `${time1/60|0}:${time1%60}` || "N/A"
+				place: place(runs[1]),
+				time: time(runs[1].run.times.primary_t)
 			}
 			leaderboard.horde["2p"].wave21[2] = {
 				players: [],
-				place: runs[2].place || 0,
-				time: `${time2/60|0}:${time2%60}` || "N/A"
+				place: place(runs[2]),
+				time: time(runs[2].run.times.primary_t)
 			}
 			fetch(runs[0].run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
 				let player = json.data;
-				leaderboard.horde["2p"].wave21[0].region = (player.location || {country:0}).country.code || "black";
-				leaderboard.horde["2p"].wave21[0].players.push(player.names.international || "<name>")
+				leaderboard.horde["2p"].wave21[0].region = region(player);
+				leaderboard.horde["2p"].wave21[0].players.push(name(player))
 				loaded++
 			})
 			if(runs[0].run.players[1]){
 				fetch(runs[0].run.players[1].uri, {method: "Get"}).then(res => res.json()).then(json => {
-					leaderboard.horde["2p"].wave21[0].players.push(json.data.names.international || "<name>")
+					leaderboard.horde["2p"].wave21[0].players.push(name(json.data))
 					loaded++
 				})
 			} else {
@@ -255,13 +245,13 @@ module.exports = new Promise(resolve => {
 			}
 			fetch(runs[1].run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
 				let player = json.data;
-				leaderboard.horde["2p"].wave21[1].region = (player.location || {country:0}).country.code || "black";
-				leaderboard.horde["2p"].wave21[1].players.push(player.names.international || "<name>")
+				leaderboard.horde["2p"].wave21[1].region = region(player);
+				leaderboard.horde["2p"].wave21[1].players.push(name(player))
 				loaded++
 			})
 			if(runs[1].run.players[1]){
 				fetch(runs[1].run.players[1].uri, {method: "Get"}).then(res => res.json()).then(json => {
-					leaderboard.horde["2p"].wave21[1].players.push(json.data.names.international || "<name>")
+					leaderboard.horde["2p"].wave21[1].players.push(name(json.data))
 					loaded++
 				})
 			} else {
@@ -269,13 +259,13 @@ module.exports = new Promise(resolve => {
 			}
 			fetch(runs[2].run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
 				let player = json.data;
-				leaderboard.horde["2p"].wave21[2].region = (player.location || {country:0}).country.code || "black";
-				leaderboard.horde["2p"].wave21[2].players.push(player.names.international || "<name>")
+				leaderboard.horde["2p"].wave21[2].region = region(player);
+				leaderboard.horde["2p"].wave21[2].players.push(name(player))
 				loaded++
 			})
 			if(runs[2].run.players[2]){
 				fetch(runs[2].run.players[2].uri, {method: "Get"}).then(res => res.json()).then(json => {
-					leaderboard.horde["2p"].wave21[2].players.push(json.data.names.international || "<name>")
+					leaderboard.horde["2p"].wave21[2].players.push(name(json.data))
 					loaded++
 				})
 			} else {
@@ -291,34 +281,31 @@ module.exports = new Promise(resolve => {
 		.then(res => res.json())
 		.then(json => {
 			console.info("Horde/2 Players/Wave 26")
-			let runs = json.data.runs,
-				time0 = runs[0].run.times.primary_t,
-				time1 = runs[1].run.times.primary_t,
-				time2 = runs[2].run.times.primary_t;
+			let runs = json.data.runs;
 			leaderboard.horde["2p"].wave26[0] = {
 				players: [],
-				place: runs[0].place || 0,
-				time: `${time0/60|0}:${time0%60}` || "N/A"
+				place: place(runs[0]),
+				time: time(runs[0].run.times.primary_t)
 			}
 			leaderboard.horde["2p"].wave26[1] = {
 				players: [],
-				place: runs[1].place || 0,
-				time: `${time1/60|0}:${time1%60}` || "N/A"
+				place: place(runs[1]),
+				time: time(runs[1].run.times.primary_t)
 			}
 			leaderboard.horde["2p"].wave26[2] = {
 				players: [],
-				place: runs[2].place || 0,
-				time: `${time2/60|0}:${time2%60}` || "N/A"
+				place: place(runs[2]),
+				time: time(runs[2].run.times.primary_t)
 			}
 			fetch(runs[0].run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
 				let player = json.data;
-				leaderboard.horde["2p"].wave26[0].region = (player.location || {country:0}).country.code || "black";
-				leaderboard.horde["2p"].wave26[0].players.push(player.names.international || "<name>")
+				leaderboard.horde["2p"].wave26[0].region = region(player);
+				leaderboard.horde["2p"].wave26[0].players.push(name(player))
 				loaded++
 			})
 			if(runs[0].run.players[1]){
 				fetch(runs[0].run.players[1].uri, {method: "Get"}).then(res => res.json()).then(json => {
-					leaderboard.horde["2p"].wave26[0].players.push(json.data.names.international || "<name>")
+					leaderboard.horde["2p"].wave26[0].players.push(name(json.data))
 					loaded++
 				})
 			} else {
@@ -326,13 +313,13 @@ module.exports = new Promise(resolve => {
 			}
 			fetch(runs[1].run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
 				let player = json.data;
-				leaderboard.horde["2p"].wave26[1].region = (player.location || {country:0}).country.code || "black";
-				leaderboard.horde["2p"].wave26[1].players.push(player.names.international || "<name>")
+				leaderboard.horde["2p"].wave26[1].region = region(player);
+				leaderboard.horde["2p"].wave26[1].players.push(name(player))
 				loaded++
 			})
 			if(runs[1].run.players[1]){
 				fetch(runs[1].run.players[1].uri, {method: "Get"}).then(res => res.json()).then(json => {
-					leaderboard.horde["2p"].wave26[1].players.push(json.data.names.international || "<name>")
+					leaderboard.horde["2p"].wave26[1].players.push(name(json.data))
 					loaded++
 				})
 			} else {
@@ -340,13 +327,13 @@ module.exports = new Promise(resolve => {
 			}
 			fetch(runs[2].run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
 				let player = json.data;
-				leaderboard.horde["2p"].wave26[2].region = (player.location || {country:0}).country.code || "black";
-				leaderboard.horde["2p"].wave26[2].players.push(player.names.international || "<name>")
+				leaderboard.horde["2p"].wave26[2].region = region(player);
+				leaderboard.horde["2p"].wave26[2].players.push(name(player))
 				loaded++
 			})
 			if(runs[2].run.players[2]){
 				fetch(runs[2].run.players[2].uri, {method: "Get"}).then(res => res.json()).then(json => {
-					leaderboard.horde["2p"].wave26[2].players.push(json.data.names.international || "<name>")
+					leaderboard.horde["2p"].wave26[2].players.push(name(json.data))
 					loaded++
 				})
 			} else {
@@ -362,65 +349,62 @@ module.exports = new Promise(resolve => {
 		.then(res => res.json())
 		.then(json => {
 			console.info("Horde/3 Players/Wave 11")
-			let runs = json.data.runs,
-				time0 = runs[0].run.times.primary_t,
-				time1 = runs[1].run.times.primary_t,
-				time2 = runs[2].run.times.primary_t;
+			let runs = json.data.runs;
 			leaderboard.horde["3p"].wave11[0] = {
 				players: [],
-				place: runs[0].place || 0,
-				time: `${time0/60|0}:${time0%60}` || "N/A"
+				place: place(runs[0]),
+				time: time(runs[0].run.times.primary_t)
 			}
 			leaderboard.horde["3p"].wave11[1] = {
 				players: [],
-				place: runs[1].place || 0,
-				time: `${time1/60|0}:${time1%60}` || "N/A"
+				place: place(runs[1]),
+				time: time(runs[1].run.times.primary_t)
 			}
 			leaderboard.horde["3p"].wave11[2] = {
 				players: [],
-				place: runs[2].place || 0,
-				time: `${time2/60|0}:${time2%60}` || "N/A"
+				place: place(runs[2]),
+				time: time(runs[2].run.times.primary_t)
 			}
 			fetch(runs[0].run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
 				let player = json.data;
-				leaderboard.horde["3p"].wave11[0].region = (player.location || {country:0}).country.code || "black";
-				leaderboard.horde["3p"].wave11[0].players.push(player.names.international || "<name>")
+				leaderboard.horde["3p"].wave11[0].region = region(player);
+				leaderboard.horde["3p"].wave11[0].players.push(name(player))
 				loaded++
 			})
 			fetch(runs[0].run.players[1].uri, {method: "Get"}).then(res => res.json()).then(json => {
-				leaderboard.horde["3p"].wave11[0].players.push(json.data.names.international || "<name>")
+				leaderboard.horde["3p"].wave11[0].players.push(name(json.data))
 				loaded++
 			})
 			fetch(runs[0].run.players[2].uri, {method: "Get"}).then(res => res.json()).then(json => {
-				leaderboard.horde["3p"].wave11[0].players.push(json.data.names.international || "<name>")
+				leaderboard.horde["3p"].wave11[0].players.push(name(json.data))
 				loaded++
 			})
 			fetch(runs[1].run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
 				let player = json.data;
-				leaderboard.horde["3p"].wave11[1].region = (player.location || {country:0}).country.code || "black";
-				leaderboard.horde["3p"].wave11[1].players.push(player.names.international || "<name>")
+				leaderboard.horde["3p"].wave11[1].region = region(player);
+				leaderboard.horde["3p"].wave11[1].players.push(name(player))
 				loaded++
 			})
 			fetch(runs[1].run.players[1].uri, {method: "Get"}).then(res => res.json()).then(json => {
-				leaderboard.horde["3p"].wave11[1].players.push(json.data.names.international || "<name>")
+				leaderboard.horde["3p"].wave11[1].players.push(name(json.data))
 				loaded++
 			})
 			fetch(runs[1].run.players[2].uri, {method: "Get"}).then(res => res.json()).then(json => {
-				leaderboard.horde["3p"].wave11[1].players.push(json.data.names.international || "<name>")
+				leaderboard.horde["3p"].wave11[1].players.push(name(json.data))
 				loaded++
 			})
 			fetch(runs[2].run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
 				let player = json.data;
-				leaderboard.horde["3p"].wave11[2].region = (player.location || {country:0}).country.code || "black";
-				leaderboard.horde["3p"].wave11[2].players.push(player.names.international || "<name>")
+				leaderboard.horde["3p"].wave11[2].region = region(player);
+				leaderboard.horde["3p"].wave11[2].players.push(name(player))
 				loaded++
 			})
 			fetch(runs[2].run.players[1].uri, {method: "Get"}).then(res => res.json()).then(json => {
-				leaderboard.horde["3p"].wave11[2].players.push(json.data.names.international || "<name>")
+				leaderboard.horde["3p"].wave11[2].players.push(name(json.data))
 				loaded++
 			})
 			fetch(runs[2].run.players[2].uri, {method: "Get"}).then(res => res.json()).then(json => {
-				leaderboard.horde["3p"].wave11[2].players.push(json.data.names.international || "<name>")
+				leaderboard.horde["3p"].wave11[2].players.push(name(json.data))
 				loaded++
 			})
 			.catch(err => {
@@ -437,65 +421,62 @@ module.exports = new Promise(resolve => {
 		.then(res => res.json())
 		.then(json => {
 			console.info("Horde/3 Players/Wave 21")
-			let runs = json.data.runs,
-				time0 = runs[0].run.times.primary_t,
-				time1 = runs[1].run.times.primary_t,
-				time2 = runs[2].run.times.primary_t;
+			let runs = json.data.runs;
 			leaderboard.horde["3p"].wave21[0] = {
 				players: [],
-				place: runs[0].place || 0,
-				time: `${time0/60|0}:${time0%60}` || "N/A"
+				place: place(runs[0]),
+				time: time(runs[0].run.times.primary_t)
 			}
 			leaderboard.horde["3p"].wave21[1] = {
 				players: [],
-				place: runs[1].place || 0,
-				time: `${time1/60|0}:${time1%60}` || "N/A"
+				place: place(runs[1]),
+				time: time(runs[1].run.times.primary_t)
 			}
 			leaderboard.horde["3p"].wave21[2] = {
 				players: [],
-				place: runs[2].place || 0,
-				time: `${time2/60|0}:${time2%60}` || "N/A"
+				place: place(runs[2]),
+				time: time(runs[2].run.times.primary_t)
 			}
 			fetch(runs[0].run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
 				let player = json.data;
-				leaderboard.horde["3p"].wave21[0].region = (player.location || {country:0}).country.code || "black";
-				leaderboard.horde["3p"].wave21[0].players.push(player.names.international || "<name>")
+				leaderboard.horde["3p"].wave21[0].region = region(player);
+				leaderboard.horde["3p"].wave21[0].players.push(name(player))
 				loaded++
 			})
 			fetch(runs[0].run.players[1].uri, {method: "Get"}).then(res => res.json()).then(json => {
-				leaderboard.horde["3p"].wave21[0].players.push(json.data.names.international || "<name>")
+				leaderboard.horde["3p"].wave21[0].players.push(name(json.data))
 				loaded++
 			})
 			fetch(runs[0].run.players[2].uri, {method: "Get"}).then(res => res.json()).then(json => {
-				leaderboard.horde["3p"].wave21[0].players.push(json.data.names.international || "<name>")
+				leaderboard.horde["3p"].wave21[0].players.push(name(json.data))
 				loaded++
 			})
 			fetch(runs[1].run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
 				let player = json.data;
-				leaderboard.horde["3p"].wave21[1].region = (player.location || {country:0}).country.code || "black";
-				leaderboard.horde["3p"].wave21[1].players.push(player.names.international || "<name>")
+				leaderboard.horde["3p"].wave21[1].region = region(player);
+				leaderboard.horde["3p"].wave21[1].players.push(name(player))
 				loaded++
 			})
 			fetch(runs[1].run.players[1].uri, {method: "Get"}).then(res => res.json()).then(json => {
-				leaderboard.horde["3p"].wave21[1].players.push(json.data.names.international || "<name>")
+				leaderboard.horde["3p"].wave21[1].players.push(name(json.data))
 				loaded++
 			})
 			fetch(runs[1].run.players[2].uri, {method: "Get"}).then(res => res.json()).then(json => {
-				leaderboard.horde["3p"].wave21[1].players.push(json.data.names.international || "<name>")
+				leaderboard.horde["3p"].wave21[1].players.push(name(json.data))
 				loaded++
 			})
 			fetch(runs[2].run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
 				let player = json.data;
-				leaderboard.horde["3p"].wave21[2].region = (player.location || {country:0}).country.code || "black";
-				leaderboard.horde["3p"].wave21[2].players.push(player.names.international || "<name>")
+				leaderboard.horde["3p"].wave21[2].region = region(player);
+				leaderboard.horde["3p"].wave21[2].players.push(name(player))
 				loaded++
 			})
 			fetch(runs[2].run.players[1].uri, {method: "Get"}).then(res => res.json()).then(json => {
-				leaderboard.horde["3p"].wave21[2].players.push(json.data.names.international || "<name>")
+				leaderboard.horde["3p"].wave21[2].players.push(name(json.data))
 				loaded++
 			})
 			fetch(runs[2].run.players[2].uri, {method: "Get"}).then(res => res.json()).then(json => {
-				leaderboard.horde["3p"].wave21[2].players.push(json.data.names.international || "<name>")
+				leaderboard.horde["3p"].wave21[2].players.push(name(json.data))
 				loaded++
 			})
 			.catch(err => {
@@ -513,70 +494,67 @@ module.exports = new Promise(resolve => {
 		.then(json => {
 			console.info("Horde/3 Players/Wave 26")
 			let runs = json.data.runs,
-				run1 = runs[0],
-				run2 = runs[1],
-				run3 = runs[2],
-				time0 = runs[0].run.times.primary_t,
-				time1 = run2 ? runs[1].run.times.primary_t:0,
-				time2 = run3 ? runs[2].run.times.primary_t:0;
+				run0 = runs[0],
+				run1 = runs[1],
+				run2 = runs[2];
 			leaderboard.horde["3p"].wave26[0] = {
 				players: [],
-				place: runs[0].place || 0,
-				time: `${time0/60|0}:${time0%60}` || "N/A"
+				place: place(run0),
+				time: time(run0.run.times.primary_t)
 			}
-			fetch(runs[0].run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
+			fetch(run0.run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
 				let player = json.data;
-				leaderboard.horde["3p"].wave26[0].region = (player.location || {country:0}).country.code || "black";
-				leaderboard.horde["3p"].wave26[0].players.push(player.names.international || "<name>")
+				leaderboard.horde["3p"].wave26[0].region = region(player);
+				leaderboard.horde["3p"].wave26[0].players.push(name(player))
 				loaded++
 			})
-			fetch(runs[0].run.players[1].uri, {method: "Get"}).then(res => res.json()).then(json => {
-				leaderboard.horde["3p"].wave26[0].players.push(json.data.names.international || "<name>")
+			fetch(run0.run.players[1].uri, {method: "Get"}).then(res => res.json()).then(json => {
+				leaderboard.horde["3p"].wave26[0].players.push(name(json.data))
 				loaded++
 			})
-			fetch(runs[0].run.players[2].uri, {method: "Get"}).then(res => res.json()).then(json => {
-				leaderboard.horde["3p"].wave26[0].players.push(json.data.names.international || "<name>")
+			fetch(run0.run.players[2].uri, {method: "Get"}).then(res => res.json()).then(json => {
+				leaderboard.horde["3p"].wave26[0].players.push(name(json.data))
 				loaded++
 			})
-			if(run2){
+			if(run1){
 				leaderboard.horde["3p"].wave26[1] = {
 					players: [],
-					place: runs[1].place || 0,
-					time: `${time1/60|0}:${time1%60}` || "N/A"
+					place: place(run1),
+					time: time(run1.run.times.primary_t)
 				}
-				fetch(runs[1].run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
+				fetch(run1.run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
 					let player = json.data;
-					leaderboard.horde["3p"].wave26[1].region = (player.location || {country:0}).country.code || "black";
-					leaderboard.horde["3p"].wave26[1].players.push(player.names.international || "<name>")
+					leaderboard.horde["3p"].wave26[1].region = region(player);
+					leaderboard.horde["3p"].wave26[1].players.push(name(player))
 					loaded++
 				})
-				fetch(runs[1].run.players[1].uri, {method: "Get"}).then(res => res.json()).then(json => {
-					leaderboard.horde["3p"].wave26[1].players.push(json.data.names.international || "<name>")
+				fetch(run1.run.players[1].uri, {method: "Get"}).then(res => res.json()).then(json => {
+					leaderboard.horde["3p"].wave26[1].players.push(name(json.data))
 					loaded++
 				})
-				fetch(runs[1].run.players[2].uri, {method: "Get"}).then(res => res.json()).then(json => {
-					leaderboard.horde["3p"].wave26[1].players.push(json.data.names.international || "<name>")
+				fetch(run1.run.players[2].uri, {method: "Get"}).then(res => res.json()).then(json => {
+					leaderboard.horde["3p"].wave26[1].players.push(name(json.data))
 					loaded++
 				})
 			}
-			if(run3){
+			if(run2){
 				leaderboard.horde["3p"].wave26[2] = {
 					players: [],
-					place: runs[2].place || 0,
-					time: `${time2/60|0}:${time2%60}` || "N/A"
+					place: place(run2),
+					time: time(run2.run.times.primary_t)
 				}
-				fetch(runs[2].run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
+				fetch(run2.run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
 					let player = json.data;
-					leaderboard.horde["3p"].wave26[2].region = (player.location || {country:0}).country.code || "black";
-					leaderboard.horde["3p"].wave26[2].players.push(player.names.international || "<name>")
+					leaderboard.horde["3p"].wave26[2].region = region(player);
+					leaderboard.horde["3p"].wave26[2].players.push(name(player))
 					loaded++
 				})
-				fetch(runs[2].run.players[1].uri, {method: "Get"}).then(res => res.json()).then(json => {
-					leaderboard.horde["3p"].wave26[2].players.push(json.data.names.international || "<name>")
+				fetch(run2.run.players[1].uri, {method: "Get"}).then(res => res.json()).then(json => {
+					leaderboard.horde["3p"].wave26[2].players.push(name(json.data))
 					loaded++
 				})
-				fetch(runs[2].run.players[2].uri, {method: "Get"}).then(res => res.json()).then(json => {
-					leaderboard.horde["3p"].wave26[2].players.push(json.data.names.international || "<name>")
+				fetch(run2.run.players[2].uri, {method: "Get"}).then(res => res.json()).then(json => {
+					leaderboard.horde["3p"].wave26[2].players.push(name(json.data))
 					loaded++
 				})
 			}
@@ -591,92 +569,89 @@ module.exports = new Promise(resolve => {
 		.then(json => {
 			console.info("Horde/3 Players/Wave 11")
 			let runs = json.data.runs,
-				run1 = runs[0],
-				run2 = runs[1],
-				run3 = runs[2],
-				time0 = runs[0].run.times.primary_t,
-				time1 = runs[1].run.times.primary_t,
-				time2 = run3 ? runs[2].run.times.primary_t:0;
+				run0 = runs[0],
+				run1 = runs[1],
+				run2 = runs[2];
 			leaderboard.horde["4p"].wave11[0] = {
 				players: [],
-				place: runs[0].place || 0,
-				time: `${time0/60|0}:${time0%60}` || "N/A"
+				place: place(run0),
+				time: time(run0.run.times.primary_t)
 			}
 			leaderboard.horde["4p"].wave11[1] = {
 				players: [],
-				place: runs[1].place || 0,
-				time: `${time1/60|0}:${time1%60}` || "N/A"
+				place: place(run1),
+				time: time(run1.run.times.primary_t)
 			}
-			fetch(runs[0].run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
+			fetch(run0.run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
 				let player = json.data;
-				leaderboard.horde["4p"].wave11[0].region = (player.location || {country:0}).country.code || "black";
-				leaderboard.horde["4p"].wave11[0].players.push(player.names.international || "<name>")
+				leaderboard.horde["4p"].wave11[0].region = region(player);
+				leaderboard.horde["4p"].wave11[0].players.push(name(player))
 				loaded++
 			})
-			fetch(runs[0].run.players[1].uri, {method: "Get"}).then(res => res.json()).then(json => {
-				leaderboard.horde["4p"].wave11[0].players.push(json.data.names.international || "<name>")
+			fetch(run0.run.players[1].uri, {method: "Get"}).then(res => res.json()).then(json => {
+				leaderboard.horde["4p"].wave11[0].players.push(name(json.data))
 				loaded++
 			})
-			fetch(runs[0].run.players[2].uri, {method: "Get"}).then(res => res.json()).then(json => {
-				leaderboard.horde["4p"].wave11[0].players.push(json.data.names.international || "<name>")
+			fetch(run0.run.players[2].uri, {method: "Get"}).then(res => res.json()).then(json => {
+				leaderboard.horde["4p"].wave11[0].players.push(name(json.data))
 				loaded++
 			})
-			fetch(runs[0].run.players[3].uri, {method: "Get"}).then(res => res.json()).then(json => {
-				leaderboard.horde["4p"].wave11[0].players.push(json.data.names.international || "<name>")
+			fetch(run0.run.players[3].uri, {method: "Get"}).then(res => res.json()).then(json => {
+				leaderboard.horde["4p"].wave11[0].players.push(name(json.data))
 				loaded++
 			})
-			fetch(runs[1].run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
+			fetch(run1.run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
 				let player = json.data;
-				leaderboard.horde["4p"].wave11[1].region = (player.location || {country:0}).country.code || "black";
-				leaderboard.horde["4p"].wave11[1].players.push(player.names.international || "<name>")
+				leaderboard.horde["4p"].wave11[1].region = region(player);
+				leaderboard.horde["4p"].wave11[1].players.push(name(player))
 				loaded++
 			})
-			fetch(runs[1].run.players[1].uri, {method: "Get"}).then(res => res.json()).then(json => {
-				leaderboard.horde["4p"].wave11[1].players.push(json.data.names.international || "<name>")
+			fetch(run1.run.players[1].uri, {method: "Get"}).then(res => res.json()).then(json => {
+				leaderboard.horde["4p"].wave11[1].players.push(name(json.data))
 				loaded++
 			})
-			fetch(runs[1].run.players[2].uri, {method: "Get"}).then(res => res.json()).then(json => {
-				leaderboard.horde["4p"].wave11[1].players.push(json.data.names.international || "<name>")
+			fetch(run1.run.players[2].uri, {method: "Get"}).then(res => res.json()).then(json => {
+				leaderboard.horde["4p"].wave11[1].players.push(name(json.data))
 				loaded++
 			})
 			.catch(err => {
-				leaderboard.horde["4p"].wave11[1].players.push(runs[1].run.players[2].name)
+				leaderboard.horde["4p"].wave11[1].players.push(run1.run.players[2].name)
 				loaded++
 			})
-			fetch(runs[1].run.players[3].uri, {method: "Get"}).then(res => res.json()).then(json => {
-				leaderboard.horde["4p"].wave11[1].players.push(json.data.names.international || "<name>")
+			fetch(run1.run.players[3].uri, {method: "Get"}).then(res => res.json()).then(json => {
+				leaderboard.horde["4p"].wave11[1].players.push(name(json.data))
 				loaded++
 			})
 			.catch(err => {
-				leaderboard.horde["4p"].wave11[1].players.push(runs[1].run.players[3].name)
+				leaderboard.horde["4p"].wave11[1].players.push(run1.run.players[3].name)
 				loaded++
 			})
-			if(run3){
+			if(run2){
 				leaderboard.horde["4p"].wave11[2] = {
 					players: [],
-					place: runs[2].place || 0,
-					time: `${time2/60|0}:${time2%60}` || "N/A"
+					place: place(run2),
+					time: time(run2.run.times.primary_t)
 				}
-				fetch(runs[2].run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
+				fetch(run2.run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
 					let player = json.data;
-					leaderboard.horde["4p"].wave11[2].region = (player.location || {country:0}).country.code || "black";
-					leaderboard.horde["4p"].wave11[2].players.push(player.names.international || "<name>")
+					leaderboard.horde["4p"].wave11[2].region = region(player);
+					leaderboard.horde["4p"].wave11[2].players.push(name(player))
 					loaded++
 				})
-				fetch(runs[2].run.players[1].uri, {method: "Get"}).then(res => res.json()).then(json => {
-					leaderboard.horde["4p"].wave11[2].players.push(json.data.names.international || "<name>")
+				fetch(run2.run.players[1].uri, {method: "Get"}).then(res => res.json()).then(json => {
+					leaderboard.horde["4p"].wave11[2].players.push(name(json.data))
 					loaded++
 				})
-				fetch(runs[2].run.players[2].uri, {method: "Get"}).then(res => res.json()).then(json => {
-					leaderboard.horde["4p"].wave11[2].players.push(json.data.names.international || "<name>")
+				fetch(run2.run.players[2].uri, {method: "Get"}).then(res => res.json()).then(json => {
+					leaderboard.horde["4p"].wave11[2].players.push(name(json.data))
 					loaded++
 				})
-				fetch(runs[2].run.players[3].uri, {method: "Get"}).then(res => res.json()).then(json => {
-					leaderboard.horde["4p"].wave11[2].players.push(json.data.names.international || "<name>")
+				fetch(run2.run.players[3].uri, {method: "Get"}).then(res => res.json()).then(json => {
+					leaderboard.horde["4p"].wave11[2].players.push(name(json.data))
 					loaded++
 				})
 				.catch(err => {
-					leaderboard.horde["4p"].wave11[2].players.push(runs[2].run.players[3].name)
+					leaderboard.horde["4p"].wave11[2].players.push(run2.run.players[3].name)
 					loaded++
 				})
 			}
@@ -691,94 +666,91 @@ module.exports = new Promise(resolve => {
 		.then(json => {
 			console.info("Horde/3 Players/Wave 21")
 			let runs = json.data.runs,
-				run1 = runs[0],
-				run2 = runs[1],
-				run3 = runs[2],
-				time0 = runs[0].run.times.primary_t,
-				time1 = run2 ? run2.run.times.primary_t:0,
-				time2 = run3 ? run3.run.times.primary_t:0;
+				run0 = runs[0],
+				run1 = runs[1],
+				run2 = runs[2];
 			leaderboard.horde["4p"].wave21[0] = {
 				players: [],
-				place: runs[0].place || 0,
-				time: `${time0/60|0}:${time0%60}` || "N/A"
+				place: place(run0),
+				time: time(run0.run.times.primary_t)
 			}
-			fetch(runs[0].run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
+			fetch(run0.run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
 				let player = json.data;
-				leaderboard.horde["4p"].wave21[0].region = (player.location || {country:0}).country.code || "black";
-				leaderboard.horde["4p"].wave21[0].players.push(player.names.international || "<name>")
+				leaderboard.horde["4p"].wave21[0].region = region(player);
+				leaderboard.horde["4p"].wave21[0].players.push(name(player))
 				loaded++
 			})
-			fetch(runs[0].run.players[1].uri, {method: "Get"}).then(res => res.json()).then(json => {
-				leaderboard.horde["4p"].wave21[0].players.push(json.data.names.international || "<name>")
+			fetch(run0.run.players[1].uri, {method: "Get"}).then(res => res.json()).then(json => {
+				leaderboard.horde["4p"].wave21[0].players.push(name(json.data))
 				loaded++
 			})
-			fetch(runs[0].run.players[2].uri, {method: "Get"}).then(res => res.json()).then(json => {
-				leaderboard.horde["4p"].wave21[0].players.push(json.data.names.international || "<name>")
+			fetch(run0.run.players[2].uri, {method: "Get"}).then(res => res.json()).then(json => {
+				leaderboard.horde["4p"].wave21[0].players.push(name(json.data))
 				loaded++
 			})
-			fetch(runs[0].run.players[3].uri, {method: "Get"}).then(res => res.json()).then(json => {
-				leaderboard.horde["4p"].wave21[0].players.push(json.data.names.international || "<name>")
+			fetch(run0.run.players[3].uri, {method: "Get"}).then(res => res.json()).then(json => {
+				leaderboard.horde["4p"].wave21[0].players.push(name(json.data))
 				loaded++
 			})
-			if(run2){
+			if(run1){
 				leaderboard.horde["4p"].wave21[1] = {
 					players: [],
-					place: runs[1].place || 0,
-					time: `${time1/60|0}:${time1%60}` || "N/A"
+					place: place(run1),
+					time: time(run1.run.times.primary_t)
 				}
-				fetch(runs[1].run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
+				fetch(run1.run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
 					let player = json.data;
-					leaderboard.horde["4p"].wave21[1].region = (player.location || {country:0}).country.code || "black";
-					leaderboard.horde["4p"].wave21[1].players.push(player.names.international || "<name>")
+					leaderboard.horde["4p"].wave21[1].region = region(player);
+					leaderboard.horde["4p"].wave21[1].players.push(name(player))
 					loaded++
 				})
-				fetch(runs[1].run.players[1].uri, {method: "Get"}).then(res => res.json()).then(json => {
-					leaderboard.horde["4p"].wave21[1].players.push(json.data.names.international || "<name>")
+				fetch(run1.run.players[1].uri, {method: "Get"}).then(res => res.json()).then(json => {
+					leaderboard.horde["4p"].wave21[1].players.push(name(json.data))
 					loaded++
 				})
-				fetch(runs[1].run.players[2].uri, {method: "Get"}).then(res => res.json()).then(json => {
-					leaderboard.horde["4p"].wave21[1].players.push(json.data.names.international || "<name>")
-					loaded++
-				})
-				.catch(err => {
-					leaderboard.horde["4p"].wave21[1].players.push(runs[1].run.players[2].name)
-					loaded++
-				})
-				fetch(runs[1].run.players[3].uri, {method: "Get"}).then(res => res.json()).then(json => {
-					leaderboard.horde["4p"].wave21[1].players.push(json.data.names.international || "<name>")
+				fetch(run1.run.players[2].uri, {method: "Get"}).then(res => res.json()).then(json => {
+					leaderboard.horde["4p"].wave21[1].players.push(name(json.data))
 					loaded++
 				})
 				.catch(err => {
-					leaderboard.horde["4p"].wave21[1].players.push(runs[1].run.players[3].name)
+					leaderboard.horde["4p"].wave21[1].players.push(run1.run.players[2].name)
+					loaded++
+				})
+				fetch(run1.run.players[3].uri, {method: "Get"}).then(res => res.json()).then(json => {
+					leaderboard.horde["4p"].wave21[1].players.push(name(json.data))
+					loaded++
+				})
+				.catch(err => {
+					leaderboard.horde["4p"].wave21[1].players.push(run1.run.players[3].name)
 					loaded++
 				})
 			}
-			if(run3){
+			if(run2){
 				leaderboard.horde["4p"].wave21[2] = {
 					players: [],
-					place: runs[2].place || 0,
-					time: `${time2/60|0}:${time2%60}` || "N/A"
+					place: place(run2),
+					time: time(run2.run.times.primary_t)
 				}
-				fetch(runs[2].run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
+				fetch(run2.run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
 					let player = json.data;
-					leaderboard.horde["4p"].wave21[2].region = (player.location || {country:0}).country.code || "black";
-					leaderboard.horde["4p"].wave21[2].players.push(player.names.international || "<name>")
+					leaderboard.horde["4p"].wave21[2].region = region(player);
+					leaderboard.horde["4p"].wave21[2].players.push(name(player))
 					loaded++
 				})
-				fetch(runs[2].run.players[1].uri, {method: "Get"}).then(res => res.json()).then(json => {
-					leaderboard.horde["4p"].wave21[2].players.push(json.data.names.international || "<name>")
+				fetch(run2.run.players[1].uri, {method: "Get"}).then(res => res.json()).then(json => {
+					leaderboard.horde["4p"].wave21[2].players.push(name(json.data))
 					loaded++
 				})
-				fetch(runs[2].run.players[2].uri, {method: "Get"}).then(res => res.json()).then(json => {
-					leaderboard.horde["4p"].wave21[2].players.push(json.data.names.international || "<name>")
+				fetch(run2.run.players[2].uri, {method: "Get"}).then(res => res.json()).then(json => {
+					leaderboard.horde["4p"].wave21[2].players.push(name(json.data))
 					loaded++
 				})
-				fetch(runs[2].run.players[3].uri, {method: "Get"}).then(res => res.json()).then(json => {
-					leaderboard.horde["4p"].wave21[2].players.push(json.data.names.international || "<name>")
+				fetch(run2.run.players[3].uri, {method: "Get"}).then(res => res.json()).then(json => {
+					leaderboard.horde["4p"].wave21[2].players.push(name(json.data))
 					loaded++
 				})
 				.catch(err => {
-					leaderboard.horde["4p"].wave21[2].players.push(runs[2].run.players[3].name)
+					leaderboard.horde["4p"].wave21[2].players.push(run2.run.players[3].name)
 					loaded++
 				})
 			}
@@ -793,94 +765,91 @@ module.exports = new Promise(resolve => {
 		.then(json => {
 			console.info("Horde/3 Players/Wave 26")
 			let runs = json.data.runs,
-				run1 = runs[0],
-				run2 = runs[1],
-				run3 = runs[2],
-				time0 = runs[0].run.times.primary_t,
-				time1 = run2 ? run2.run.times.primary_t:0,
-				time2 = run3 ? run3.run.times.primary_t:0;
+				run0 = runs[0],
+				run1 = runs[1],
+				run2 = runs[2];
 			leaderboard.horde["4p"].wave26[0] = {
 				players: [],
-				place: runs[0].place || 0,
-				time: `${time0/60|0}:${time0%60}` || "N/A"
+				place: place(run0),
+				time: time(run0.run.times.primary_t)
 			}
-			fetch(runs[0].run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
+			fetch(run0.run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
 				let player = json.data;
-				leaderboard.horde["4p"].wave26[0].region = (player.location || {country:0}).country.code || "black";
-				leaderboard.horde["4p"].wave26[0].players.push(player.names.international || "<name>")
+				leaderboard.horde["4p"].wave26[0].region = region(player);
+				leaderboard.horde["4p"].wave26[0].players.push(name(player))
 				loaded++
 			})
-			fetch(runs[0].run.players[1].uri, {method: "Get"}).then(res => res.json()).then(json => {
-				leaderboard.horde["4p"].wave26[0].players.push(json.data.names.international || "<name>")
+			fetch(run0.run.players[1].uri, {method: "Get"}).then(res => res.json()).then(json => {
+				leaderboard.horde["4p"].wave26[0].players.push(name(json.data))
 				loaded++
 			})
-			fetch(runs[0].run.players[2].uri, {method: "Get"}).then(res => res.json()).then(json => {
-				leaderboard.horde["4p"].wave26[0].players.push(json.data.names.international || "<name>")
+			fetch(run0.run.players[2].uri, {method: "Get"}).then(res => res.json()).then(json => {
+				leaderboard.horde["4p"].wave26[0].players.push(name(json.data))
 				loaded++
 			})
-			fetch(runs[0].run.players[3].uri, {method: "Get"}).then(res => res.json()).then(json => {
-				leaderboard.horde["4p"].wave26[0].players.push(json.data.names.international || "<name>")
+			fetch(run0.run.players[3].uri, {method: "Get"}).then(res => res.json()).then(json => {
+				leaderboard.horde["4p"].wave26[0].players.push(name(json.data))
 				loaded++
 			})
-			if(run2){
+			if(run1){
 				leaderboard.horde["4p"].wave26[1] = {
 					players: [],
-					place: runs[1].place || 0,
-					time: `${time1/60|0}:${time1%60}` || "N/A"
+					place: place(run1),
+					time: time(run1.run.times.primary_t)
 				}
-				fetch(runs[1].run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
+				fetch(run1.run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
 					let player = json.data;
-					leaderboard.horde["4p"].wave26[1].region = (player.location || {country:0}).country.code || "black";
-					leaderboard.horde["4p"].wave26[1].players.push(player.names.international || "<name>")
+					leaderboard.horde["4p"].wave26[1].region = region(player);
+					leaderboard.horde["4p"].wave26[1].players.push(name(player))
 					loaded++
 				})
-				fetch(runs[1].run.players[1].uri, {method: "Get"}).then(res => res.json()).then(json => {
-					leaderboard.horde["4p"].wave26[1].players.push(json.data.names.international || "<name>")
+				fetch(run1.run.players[1].uri, {method: "Get"}).then(res => res.json()).then(json => {
+					leaderboard.horde["4p"].wave26[1].players.push(name(json.data))
 					loaded++
 				})
-				fetch(runs[1].run.players[2].uri, {method: "Get"}).then(res => res.json()).then(json => {
-					leaderboard.horde["4p"].wave26[1].players.push(json.data.names.international || "<name>")
-					loaded++
-				})
-				.catch(err => {
-					leaderboard.horde["4p"].wave26[1].players.push(runs[1].run.players[2].name)
-					loaded++
-				})
-				fetch(runs[1].run.players[3].uri, {method: "Get"}).then(res => res.json()).then(json => {
-					leaderboard.horde["4p"].wave26[1].players.push(json.data.names.international || "<name>")
+				fetch(run1.run.players[2].uri, {method: "Get"}).then(res => res.json()).then(json => {
+					leaderboard.horde["4p"].wave26[1].players.push(name(json.data))
 					loaded++
 				})
 				.catch(err => {
-					leaderboard.horde["4p"].wave26[1].players.push(runs[1].run.players[3].name)
+					leaderboard.horde["4p"].wave26[1].players.push(run1.run.players[2].name)
+					loaded++
+				})
+				fetch(run1.run.players[3].uri, {method: "Get"}).then(res => res.json()).then(json => {
+					leaderboard.horde["4p"].wave26[1].players.push(name(json.data))
+					loaded++
+				})
+				.catch(err => {
+					leaderboard.horde["4p"].wave26[1].players.push(run1.run.players[3].name)
 					loaded++
 				})
 			}
-			if(run3){
+			if(run2){
 				leaderboard.horde["4p"].wave26[2] = {
 					players: [],
-					place: runs[2].place || 0,
-					time: `${time2/60|0}:${time2%60}` || "N/A"
+					place: place(run2),
+					time: time(run2.run.times.primary_t)
 				}
-				fetch(runs[2].run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
+				fetch(run2.run.players[0].uri, {method: "Get"}).then(res => res.json()).then(json => {
 					let player = json.data;
-					leaderboard.horde["4p"].wave26[2].region = (player.location || {country:0}).country.code || "black";
-					leaderboard.horde["4p"].wave26[2].players.push(player.names.international || "<name>")
+					leaderboard.horde["4p"].wave26[2].region = region(player);
+					leaderboard.horde["4p"].wave26[2].players.push(name(player))
 					loaded++
 				})
-				fetch(runs[2].run.players[1].uri, {method: "Get"}).then(res => res.json()).then(json => {
-					leaderboard.horde["4p"].wave26[2].players.push(json.data.names.international || "<name>")
+				fetch(run2.run.players[1].uri, {method: "Get"}).then(res => res.json()).then(json => {
+					leaderboard.horde["4p"].wave26[2].players.push(name(json.data))
 					loaded++
 				})
-				fetch(runs[2].run.players[2].uri, {method: "Get"}).then(res => res.json()).then(json => {
-					leaderboard.horde["4p"].wave26[2].players.push(json.data.names.international || "<name>")
+				fetch(run2.run.players[2].uri, {method: "Get"}).then(res => res.json()).then(json => {
+					leaderboard.horde["4p"].wave26[2].players.push(name(json.data))
 					loaded++
 				})
-				fetch(runs[2].run.players[3].uri, {method: "Get"}).then(res => res.json()).then(json => {
-					leaderboard.horde["4p"].wave26[2].players.push(json.data.names.international || "<name>")
+				fetch(run2.run.players[3].uri, {method: "Get"}).then(res => res.json()).then(json => {
+					leaderboard.horde["4p"].wave26[2].players.push(name(json.data))
 					loaded++
 				})
 				.catch(err => {
-					leaderboard.horde["4p"].wave26[2].players.push(runs[2].run.players[3].name)
+					leaderboard.horde["4p"].wave26[2].players.push(run2.run.players[3].name)
 					loaded++
 				})
 			}

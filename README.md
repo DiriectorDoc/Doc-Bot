@@ -11,7 +11,7 @@ Syntax | Usage
 [`!colour`](#colour) or<br/>`!color` | Changes the colour of the display name of the user who entered the command
 [`!commands`](#commands) | Replies with a list of commands
 [`!request`](#request) | Sends a request to the admin
-[`!speedruns`](#speedruns) | Replies with the Brawlhalla Speedrun leaderboards
+[`!speedrun`](#speedruns) or<br/>`!speedruns` | Replies with the Brawlhalla Speedrun leaderboards
 [`!wisdom`](#wisdom) | Replies with a quote
 [`!yellatme`](#yellatme) | Yells at the user
 
@@ -77,13 +77,13 @@ The argument after the `wisom` request should quote you would like to add to the
     !request delete https://discordapp.com/channels/123456789012345678/234567890123456789/345678901234567890
     !request wisdom "Hi there" - John, 2020
 
-## !speedruns
+## !speedrun
 Displays the Brawlhalla speedrun leaderboards. The information displayed was copied directly from [speedrun.com/brawlhalla](https://speedrun.com/brawlhalla).
 
 ### Usage
 The syntax for this command is as follows:
 
-    !speedruns [category] [ruleset...[ruleset2]]
+    !speedrun [category] [ruleset...[ruleset2]]
 
 #### [category]
 Possible category parameters:
@@ -106,18 +106,18 @@ Horde only<br/>*First ruleset*
 
 *Second ruleset*
 
-* `wave11`
+* `wave11` (default)
 * `wave21`
-* `wave26` (default)
+* `wave26`
 
 ### Example
 
-    !speedruns tournament sigs
-    !speedruns horde 2p wave21
-    !speedruns tutorial%
+    !speedrun tournament sigs
+    !speedrun horde 2p wave21
+    !speedrun tutorial%
 
-    !speedruns tournament
-    !speedruns horde
+    !speedrun tournament
+    !speedrun horde
 
 >**Note**: If a category only has 1 ruleset, or nad no ruleset at all, the proceeding parameter will be ignored
 

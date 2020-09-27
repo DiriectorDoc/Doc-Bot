@@ -69,9 +69,9 @@ function modOnly(msg, call){
 /* Returns an array of fielsds to bu used in an embeded message. Fields contain the top 3 placings according to leaderboards.yml */
 function getTop3(cat){
 	let fields = [];
-	for(var i = 0; i < 3; i++){
+	for(var i = 0; i < 3 && cat[i]; i++){
 		fields.push({
-			name: `${cat[i].place}${[, "st", "nd", "rd"][cat[i].place] || "th"} ${cat[i].time}`,
+			name: `${cat[i].place}${[, "ˢᵗ", "ⁿᵈ", "ʳᵈ"][cat[i].place] || "ᵗʰ"} __${cat[i].time}__`,
 			value: `:flag_${cat[i].region}:${cat[i].player || cat[i].players.join(", ")}`,
 			inline: true
 		})

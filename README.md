@@ -8,6 +8,7 @@ Here are the commands that Doc Bot offers:
 Syntax | Usage
 -------|------
 [`!about`](#about) | Replies with a list of commands
+[`!bug`](#bug) | Replied with options for submitting a bug
 [`!colour`](#colour) or<br/>`!color` | Changes the colour of the display name of the user who entered the command
 [`!commands`](#commands) | Replies with a list of commands
 [`!request`](#request) | Sends a request to the admin
@@ -17,6 +18,14 @@ Syntax | Usage
 
 ## !about
 Displays things like version number, creator, and linked repository.
+
+### Usage
+This command does not accept a parameter. Entering anything following the command, even a [help](#help) argument, does nothing.
+
+## !bug
+Replied with a link for the user to submit a bug as well as a link to the `#talk-to-the-doc` channel. This is the link they will see:
+
+> [https://github.com/DiriectorDoc/Doc-Bot/issues/new?assignees=&labels=bug&template=bug_report.md&title=](https://github.com/DiriectorDoc/Doc-Bot/issues/new?assignees=&labels=bug&template=bug_report.md&title=)
 
 ### Usage
 This command does not accept a parameter. Entering anything following the command, even a [help](#help) argument, does nothing.

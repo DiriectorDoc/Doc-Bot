@@ -31,10 +31,20 @@
 - text: Don't trust "facts" you read on the internet as they are often not true.
   by: Abraham Lincoln, 1964
 - text: According to startistics, people's number 1 fear is publich speaking. Their number two is death. seems about right.
-  by: Unknown
+  by: &x Unknown
 - text: People say they never lie and then procede to click "I have read and accept the terms and conditions."
   by: *me
 - text: Do not take life too seriously. You will never get out of it alive.
   by: Elbert Hubbard, 1856-1915
 - text: The road to success is always under construction.
   by: Lily Tomlin, Unknown year
+- text: A fool can throw a stone in a pond that 100 wise men can not get out.
+  by: Saul Bellow, 1915-2005
+- text: Hurricanes. Tornados. Blizards. Earthquakes. Volcanoes. Floods. Welsome to the United States.
+  by: *me
+- text: I do not think, therefore I do not am.
+  by: *x
+- text: I will go out on a limb and say "If you are detonating a bomb in front of a bunch of dry grass on a 100 degree day, that's probably negligence."
+  by: LegalEagle, 2020
+- text: Jump off the cliff and build your wings on the way down.
+  by: Ray Bradbury, 1920 - 2012

@@ -8,15 +8,24 @@ Here are the commands that Doc Bot offers:
 Syntax | Usage
 -------|------
 [`!about`](#about) | Replies with a list of commands
+[`!bug`](#bug) | Replied with options for submitting a bug
 [`!colour`](#colour) or<br/>`!color` | Changes the colour of the display name of the user who entered the command
 [`!commands`](#commands) | Replies with a list of commands
 [`!request`](#request) | Sends a request to the admin
-[`!speedruns`](#speedruns) | Replies with the Brawlhalla Speedrun leaderboards
+[`!speedrun`](#speedruns) or<br/>`!speedruns` | Replies with the Brawlhalla Speedrun leaderboards
 [`!wisdom`](#wisdom) | Replies with a quote
 [`!yellatme`](#yellatme) | Yells at the user
 
 ## !about
 Displays things like version number, creator, and linked repository.
+
+### Usage
+This command does not accept a parameter. Entering anything following the command, even a [help](#help) argument, does nothing.
+
+## !bug
+Replied with a link for the user to submit a bug as well as a link to the `#talk-to-the-doc` channel. This is the link they will see:
+
+> [https://github.com/DiriectorDoc/Doc-Bot/issues/new?assignees=&labels=bug&template=bug_report.md&title=](https://github.com/DiriectorDoc/Doc-Bot/issues/new?assignees=&labels=bug&template=bug_report.md&title=)
 
 ### Usage
 This command does not accept a parameter. Entering anything following the command, even a [help](#help) argument, does nothing.
@@ -71,19 +80,19 @@ Possible types:
 #### [arguments]
 The argument after the `delete` or `censor` request should be the link to the discord message in question. To get the link of a discord message, right-click on the message then select the "Copy Message Link" option.
 
-The argument after the `wisom` request should quote you would like to add to the `!wisdom` command. The quote should be in quotation and the author and the year should follow. If the author or the year is unknow, specify that it is unknown.
+The argument after the `wisdom` request should quote you would like to add to the `!wisdom` command. The quote should be in quotations and the author and the year should follow. If the author or the year is unknown, specify that it is unknown.
 
 ### Examples
     !request delete https://discordapp.com/channels/123456789012345678/234567890123456789/345678901234567890
     !request wisdom "Hi there" - John, 2020
 
-## !speedruns
+## !speedrun
 Displays the Brawlhalla speedrun leaderboards. The information displayed was copied directly from [speedrun.com/brawlhalla](https://speedrun.com/brawlhalla).
 
 ### Usage
 The syntax for this command is as follows:
 
-    !speedruns [category] [ruleset...[ruleset2]]
+    !speedrun [category] [ruleset...[ruleset2]]
 
 #### [category]
 Possible category parameters:
@@ -106,18 +115,18 @@ Horde only<br/>*First ruleset*
 
 *Second ruleset*
 
-* `wave11`
+* `wave11` (default)
 * `wave21`
-* `wave26` (default)
+* `wave26`
 
 ### Example
 
-    !speedruns tournament sigs
-    !speedruns horde 2p wave21
-    !speedruns tutorial%
+    !speedrun tournament sigs
+    !speedrun horde 2p wave21
+    !speedrun tutorial%
 
-    !speedruns tournament
-    !speedruns horde
+    !speedrun tournament
+    !speedrun horde
 
 >**Note**: If a category only has 1 ruleset, or nad no ruleset at all, the proceeding parameter will be ignored
 

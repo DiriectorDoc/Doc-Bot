@@ -1,14 +1,22 @@
+console.info("Caching packages")
+
 const Discord = require("discord.js"),
+	  fetch = require("node-fetch"),
+	  
 	  bot = new Discord.Client({partials: ["MESSAGE", "CHANNEL", "REACTION"]}),
 
 	  yaml = (link) => require("js-yaml").safeLoad(require("fs").readFileSync(link, "utf8")),
 
-	  leaderboard = yaml("leaderboards.yml"),
 	  IDs = yaml("IDs.yml"),
 	  quotes = yaml("quotes.yml");
 
 let self,
-	dmMe;
+	dmMe,
+	
+	leaderboard;
+(async function(){
+	leaderboard = await require("./leaderboard");
+})()
 
 /* Randomly picks one of and of the given parameters */
 function pick(){
@@ -17,9 +25,10 @@ function pick(){
 
 /* Turns a date into a neatly formated date and time to be used in a sentence */
 function fullDate(date) {
-	return ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][date.getUTCDay()] +
-		`, ${["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][date.getUTCMonth()]} ` +
-		`${date.getUTCDate()}, ${date.getUTCFullYear()}, at ${date.getUTCHours()}:${date.getUTCMinutes()} UTC`
+	return `${
+	["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][date.getUTCDay()]}, ${
+	["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][date.getUTCMonth()]} ${
+	date.getUTCDate()}, ${date.getUTCFullYear()}, at ${date.getUTCHours()}:${date.getUTCMinutes()} UTC`
 }
 
 /* Checks who entered the command. If it was an admin, it executes the callback. Else, it replies with a randomly generated message. */
@@ -27,24 +36,24 @@ function modOnly(msg, call){
 	if(IDs.mods.some(id => id === msg.author.id)){
 		call()
 	} else {
-		msg.reply(
+		msg.reply(`${
 			pick(
-				"Excuse me? ",
-				"Ah, ah, ah. ",
-				"What are you doing? ",
-				"Stop right there! ",
+				"Excuse me?",
+				"Ah, ah, ah.",
+				"What are you doing?",
+				"Stop right there!",
 				"Um...",
-				"Um, no. ",
-				"Hold it! ",
-				"I don't think so. "
-			) +
+				"Um, no.",
+				"Hold it!",
+				"I don't think so."
+			)} ${
 			pick(
-				"Are you an admin? No? I didn't think so. ",
-				"You need to be an admin to use that command. ",
-				"Only admins can do that. ",
-				"You tried, but that's an admin-only command. ",
-				"Last time I checked, you aren't an admin. "
-			) +
+				"Are you an admin? No? I didn't think so.",
+				"You need to be an admin to use that command.",
+				"Only admins can do that.",
+				"You tried, but that's an admin-only command.",
+				"Last time I checked, you aren't an admin."
+			)} ${
 			pick(
 				"Lay of the admin commands, m'kay?",
 				"Try a different command, you might have some luck.",
@@ -53,16 +62,16 @@ function modOnly(msg, call){
 				"Sorry, but you'll have to make do with some other commands.",
 				"There's a huge list of other `!commands`. Use them instead."
 			)
-		)
+		}`)
 	}
 }
 
 /* Returns an array of fielsds to bu used in an embeded message. Fields contain the top 3 placings according to leaderboards.yml */
 function getTop3(cat){
 	let fields = [];
-	for(var i = 0; i < 3; i++){
+	for(var i = 0; i < 3 && cat[i]; i++){
 		fields.push({
-			name: `${cat[i].place + ([, "st", "nd", "rd"][cat[i].place] || "th")} ${cat[i].time}`,
+			name: `${cat[i].place}${[, "ˢᵗ", "ⁿᵈ", "ʳᵈ"][cat[i].place] || "ᵗʰ"} __${cat[i].time}__`,
 			value: `:flag_${cat[i].region}:${cat[i].player || cat[i].players.join(", ")}`,
 			inline: true
 		})
@@ -176,7 +185,7 @@ bot.on("message", function(msg){
 							fields: [
 								{
 									name: "Version",
-									value: "0.6.2",
+									value: "0.7.1",
 									inline: true
 								},
 								{
@@ -248,6 +257,12 @@ bot.on("message", function(msg){
 							timestamp: new Date()
 						}))
 						break;
+					case "bug":
+						msg.reply(
+							"To report a bug, please visit https://github.com/DiriectorDoc/Doc-Bot/issues/new?assignees=&labels=bug&template=bug_report.md&title=" +
+							"\n\nOr let me know in #talk-to-the-doc"
+						)
+						break;
 					case "color":
 					case "colour":
 						if(args[0]){
@@ -258,6 +273,7 @@ bot.on("message", function(msg){
 								case "/?":
 								case "colors":
 								case "colours":
+									let colour = command == "color" ? "color":"colour"
 									msg.reply(new Discord.MessageEmbed({
 										title: "Commands",
 										color: 0x3498DB,
@@ -265,10 +281,10 @@ bot.on("message", function(msg){
 											name: "Doc Bot",
 											icon_url: self.displayAvatarURL()
 										},
-										description: `Changes the ${argument == "colors" ? "color":"colour"} of your display name.`,
+										description: `Changes the ${colour} of your display name.`,
 										fields: [
 											{
-												name: `Availible ${argument == "colors" ? "Colors":"Colours"}`,
+												name: `Availible ${colour}s`,
 												value: "`red`\n`orange`\n`yellow`\n`green`\n`blue`\n`cyan`\n`purple`\n`violet` (same as purple)\n`pink`\n`white`"
 											}
 										],
@@ -295,24 +311,36 @@ bot.on("message", function(msg){
 							description: "list of commands",
 							fields: [
 								{
-									name: "Commands",
-									value: "`!about`\n" +
-									"`!color`\n" +
-									"`!commands`\n" +
-									"`!request`\n" +
-									"`!speedruns`\n" +
-									"`!yellatme`",
-									inline: true
+									name: "`!about`",
+									value: "Displays information about me, Doc Bot"
 								},
 								{
-									name: "Purpose",
-									value: "Displays information about me, Doc Bot\n" +
-									"Changes display name color\n" +
-									"Displays this here list\n" +
-									"Sends a request to D_Doc\n" +
-									"Displays Brawlhalla speedrun leaderboatrds\n" +
-									"Yells at you",
-									inline: true
+									name: "`!bug`",
+									value: "Replies with a link for submitting a bug"
+								},
+								{
+									name: "`!color`",
+									value: "Changes display name color"
+								}, 
+								{
+									name: "`!commands`",
+									value: "Displays this here list"
+								},
+								{
+									name: "`!request`",
+									value: "Sends a request to D_Doc"
+								},
+								{
+									name: "`!speedruns`",
+									value: "Displays Brawlhalla speedrun leaderboards"
+								}, 
+								{
+									name: "`!yellatme`",
+									value: "Displays the 'admin only command' message"
+								}, 
+								{
+									name: "`!wisdom`",
+									value: "Displayes a random quote"
 								}
 							],
 							timestamp: new Date()
@@ -403,6 +431,7 @@ bot.on("message", function(msg){
 							badCommand(msg, command)
 						}
 						break;
+					case "speedrun":
 					case "speedruns":
 						if(args[0]){
 							let rule,
@@ -445,7 +474,7 @@ bot.on("message", function(msg){
 											},
 											{
 												name: "Notes",
-												value: "The `tutorial%` category has no ruleset subcategories. Addition parameters proceding the command will have no effect."
+												value: "The `tutorial%` category has no ruleset subcategories. Additional parameters proceding the command will be ignored."
 											}
 										],
 										timestamp: new Date()
@@ -457,32 +486,32 @@ bot.on("message", function(msg){
 											rule = args[1].match(/^(no)?sigs$/g)[0]
 										} catch(err){
 											badCommand(msg, command)
-											break;
+											break
 										}
-										rule2 = false;
 									} else {
 										rule = "sigs"
 									}
 								case "horde":
-									if(args[1]){
+									if(args[1] && !rule){
 										try {
-											rule = rule || args[1].match(/^[2-4]p$/g)[0]
+											rule = args[1].match(/^[2-4]p$/g)[0]
 										} catch(err){
 											badCommand(msg, command)
-											break;
+											break
 										}
-										if(args[2] && rule2 !== false){
+										if(args[2] && !rule2){
 											try {
 												rule2 = args[2].match(/^wave(11|21|26)$/g)[0]
 											} catch(err){
 												badCommand(msg, command)
-												break;
+												break
 											}
 										} else {
-											rule2 = "wave26"
+											rule2 = "wave11"
 										}
-									} else {
+									} else if(rule === undefined){
 										rule = "2p";
+										rule2 = "wave11"
 									}
 									msg.reply(new Discord.MessageEmbed({
 										title: "Brawlhalla Speedrun Leaderboard",
@@ -495,13 +524,13 @@ bot.on("message", function(msg){
 										description: args[0][0].toUpperCase()+args[0].slice(1) + 
 										` ${
 											rule2 ?
-											rule + ` ${rule2.replace(/e([12])/g, "e $1")}` :
+											rule + ` ${rule2.replace(/wave([12])/g, "Wave $1")}` :
 											rule == "sigs" ? "":"No Signatures"
 										}` +
 										"\n\nLeaderboard from speedrun.com/brawlhalla",
 										fields: getTop3(
 											rule2 ?
-											leaderboard[args[0]][rule[rule2]] :
+											leaderboard[args[0]][rule][rule2] :
 											leaderboard[args[0]][rule]
 										),
 										timestamp: new Date()
@@ -531,62 +560,6 @@ bot.on("message", function(msg){
 						break;
 					case "yellatme":
 						modOnly(msg, () => null)
-						break;
-					case "notify":
-						/*
-							DEPRICATED
-
-						if(args[0]){
-							switch(args[0]){
-								case "update":
-									modOnly(msg, () => {
-										bot.channels.fetch(IDs.channels.announcements).then(channel => {
-											channel.send(
-												"Hey, @everyone. It's me, Doc Bot.\n\nOn " + fullDate(new Date(new Date().getTime() + 9e7)) +
-												", exactly 25 hours from now, I will be experiencing an update and will not be online. As a result" +
-												", a few channels will close to prevent unqueued processes when I go back online.\n" +
-
-												"The #promotion channel will close in 45 minutes from now, preventing anyone from posting " +
-												"to the channel. However, it will still remain visable to everyone.\n" +
-
-												"Thank you for your understanding. When I return, I will have more to offer.\n\n" +
-
-												"Bye\n-*Doc Bot*"
-											)
-										})
-									})
-									break;
-								default:
-									msg.channel.send("@everyone " + args.join(" "))
-							}
-						} else {
-							modOnly(msg, () => null)
-						}*/
-						depricated(msg)
-						break;
-					case "prepareupdateshutdown":
-						/*
-							DEPRICATED
-
-						modOnly(msg, () => {
-							msg.channel.send("Preparing shutdown.\nClosing #promotion in 45 minutes.\nLogging off in 25 hours.")
-							setTimeout(function(){
-								bot.channels.fetch(IDs.channels.promotion).then(channel => {
-									channel.updateOverwrite(channel.guild.roles.everyone, {"SEND_MESSAGES": false})
-								})
-							}, 27e5)
-							setTimeout(function(){
-								throw "Doc Bot has been sucessfully stopped."
-							}, 9e7)
-							let hours = 24,
-								countdown = setInterval(function(){
-									msg.channel.send(`Logging off in ${hours--} hours.`)
-									if(!(hours-1)){
-										clearInterval(countdown);
-									}
-								}, 36e5)
-						})*/
-						depricated(msg)
 						break;
 					case "stop":
 						modOnly(msg, () => {
@@ -651,6 +624,6 @@ Link: ${msgLink(reaction.message)}
 
 Please have a look at it.`)
 	}
-});
+})
 
 bot.login(process.env.token) // Set by the VPS (process.env.token)

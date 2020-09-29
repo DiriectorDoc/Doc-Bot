@@ -71,7 +71,7 @@ Possible types:
 #### [arguments]
 The argument after the `delete` or `censor` request should be the link to the discord message in question. To get the link of a discord message, right-click on the message then select the "Copy Message Link" option.
 
-The argument after the `wisom` request should quote you would like to add to the `!wisdom` command. The quote should be in quotation and the author and the year should follow. If the author or the year is unknow, specify that it is unknown.
+The argument after the `wisdom` request should quote you would like to add to the `!wisdom` command. The quote should be in quotations and the author and the year should follow. If the author or the year is unknown, specify that it is unknown.
 
 ### Examples
     !request delete https://discordapp.com/channels/123456789012345678/234567890123456789/345678901234567890

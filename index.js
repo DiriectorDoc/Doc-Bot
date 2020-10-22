@@ -112,7 +112,7 @@ function badCommand(msg, command, text){
 /* Sends a deprication warning */
 function depricated(msg){
 	modOnly(msg, () => {
-		msg.reply("That command has bee depricated. You should now, you're the one who depricated it.")
+		msg.reply("That command has been depricated. You should know, you're the one who depricated it.")
 	})
 }
 

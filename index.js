@@ -491,10 +491,22 @@ bot.on("message", function(msg){
 									} else {
 										rule = "sigs"
 									}
+								case "walker":
+									if(args[1] && !rule){
+										try {
+											rule = args[1].match(/^2p|1p1b$/g)[0]
+										} catch(err){
+											badCommand(msg, command)
+											break
+										}
+									} else if(rule === undefined){
+										rule = "2p"
+									}
+									rule2 = "wave6";
 								case "horde":
 									if(args[1] && !rule){
 										try {
-											rule = args[1].match(/^[2-4]p$/g)[0]
+											rule = args[1].match(/^[2-4]p|1p1b$/g)[0]
 										} catch(err){
 											badCommand(msg, command)
 											break
@@ -521,13 +533,11 @@ bot.on("message", function(msg){
 											name: "DocBot",
 											icon_url: self.displayAvatarURL()
 										},
-										description: args[0][0].toUpperCase()+args[0].slice(1) + 
-										` ${
+										description: `${args[0][0].toUpperCase()+args[0].slice(1)} ${
 											rule2 ?
 											rule + ` ${rule2.replace(/wave([12])/g, "Wave $1")}` :
 											rule == "sigs" ? "":"No Signatures"
-										}` +
-										"\n\nLeaderboard from speedrun.com/brawlhalla",
+										}\n\nLeaderboard from speedrun.com/brawlhalla`,
 										fields: getTop3(
 											rule2 ?
 											leaderboard[args[0]][rule][rule2] :

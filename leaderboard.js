@@ -48,20 +48,20 @@ module.exports = new Promise(resolve => {
 
 		get = {method: "Get"},
 		url = "https://www.speedrun.com/api/v1/leaderboards/m1z73360/category/",
-		urls = [
-			["wdmzez52", "Tournament/Sigs"],
-			["wdmzez52?var-5lypvpyl=z19ggzjl", "Tournament/NoSigs"],
-			["n2yozzzd", "Tutorial%"],
-			["wdm66m3k", "Horde/2 Players/Wave 11"],
-			["wdm66m3k?var-9l779p9l=jq6k3ynl", "Horde/2 Players/Wave 21"],
-			["wdm66m3k?var-9l779p9l=5lmjz8yl", "Horde/2 Players/Wave 26"],
-			["wdm66m3k?var-ylpegpj8=jq6k34nl", "Horde/3 Players/Wave 11"],
-			["wdm66m3k?var-ylpegpj8=jq6k34nl&var-9l779p9l=jq6k3ynl", "Horde/3 Players/Wave 21"],
-			["wdm66m3k?var-ylpegpj8=jq6k34nl&var-9l779p9l=5lmjz8yl", "Horde/3 Players/Wave 26"],
-			["wdm66m3k?var-ylpegpj8=5lmjzxyl", "Horde/4 Players/Wave 11"],
-			["wdm66m3k?var-ylpegpj8=5lmjzxyl&var-9l779p9l=jq6k3ynl", "Horde/4 Players/Wave 21"],
+		categories = [
+			["wdmzez52", "Tournament/Sigs", "sigs"],
+			["wdmzez52?var-5lypvpyl=z19ggzjl", "Tournament/NoSigs", "nosigs"],
+			["02qvnl7d?var-kn0jo43l=5q88rxgq", "Walker Attack/1 Player 1 Bot/Wave 6", "1p1b", "wave6", "walker"],
+			["wdm66m3k?var-ylpegpj8=gq7dg0pq", "Horde/1 Player 1 Bot/Wave 11", "1p1b", "wave11", "horde"],
+			["wdm66m3k", "Horde/2 Players/Wave 11", "2p", "wave11"],
+			["wdm66m3k?var-9l779p9l=jq6k3ynl", "Horde/2 Players/Wave 21", "2p", "wave21"],
+			["wdm66m3k?var-9l779p9l=5lmjz8yl", "Horde/2 Players/Wave 26", "2p", "wave26"],
+			["wdm66m3k?var-ylpegpj8=jq6k34nl", "Horde/3 Players/Wave 11", "3p", "wave11"],
+			["wdm66m3k?var-ylpegpj8=jq6k34nl&var-9l779p9l=jq6k3ynl", "Horde/3 Players/Wave 21", "3p", "wave21"],
+			["wdm66m3k?var-ylpegpj8=jq6k34nl&var-9l779p9l=5lmjz8yl", "Horde/3 Players/Wave 26", "3p", "wave26"],
+			["wdm66m3k?var-ylpegpj8=5lmjzxyl", "Horde/4 Players/Wave 11", "4p", "wave11"],
+			["wdm66m3k?var-ylpegpj8=5lmjzxyl&var-9l779p9l=jq6k3ynl", "Horde/4 Players/Wave 21", "4p", "wave21"],
 			["wdm66m3k?var-ylpegpj8=gq7dg0pq", "Horde/1 Player 1 Bot/Wave 11"],
-			["02qvnl7d?var-kn0jo43l=5q88rxgq", "Walker Attack/1 Player 1 Bot/Wave 6"],
 			["02qvnl7d", "Walker Attack/2 Players/Wave 6"]
 		];
 
@@ -71,29 +71,100 @@ module.exports = new Promise(resolve => {
 	console.group("Fetching leaderboard");
 	
 	(async function(){
-		for(let k = 0; k < 14; k++){
-			await fetch(`https://www.speedrun.com/api/v1/leaderboards/m1z73360/category/${urls[k][0]}`, {method: "Get"})
-				.then(res => res.json())
-				.then(async json => {
-					console.info(urls[k][1])
-					let runs = json.data.runs;
-					for(let i = 0; i < 3; i++){
-						await fetch(runs[0].uri(0), get).then(res => res.json()).then(json => {
-							let player = json.data
-							leaderboard.tournament.sigs[0] = {
-								player: name(player),
-								region: region(player),
-								place: place(runs[0]),
-								time: runs[0].time()
-							}
-						})
-					}
-				})
-				.catch(err => {
-					console.error(err)
-					console.warn(`Could not fetch ${urls[k][1]}`)
-					leaderboard.tournament.sigs = NA
-				})
+		for(let k = 0; k < 15; k++){
+			if(k < 2){
+				await fetch(`${url}${categories[k][0]}`, get)
+					.then(res => res.json())
+					.then(async json => {
+						console.info(categories[k][1])
+						let runs = json.data.runs;
+						for(let i = 0; i < 3; i++){
+							await fetch(runs[i].uri(0), get).then(res => res.json()).then(json => {
+								let player = json.data
+								leaderboard.tournament.[categories[k][2]][0] = {
+									player: name(player),
+									region: region(player),
+									place: place(runs[i]),
+									time: runs[i].time()
+								}
+							})
+						}
+					})
+					.catch(err => {
+						console.error(err)
+						console.warn(`Could not fetch ${categories[k][1]}`)
+						leaderboard.tournament.[categories[k][2]] = NA
+					})
+			} else if(k < 4){
+				await fetch(`${url}${categories[k][0]}`, get)
+					.then(res => res.json())
+					.then(async json => {
+						console.info(categories[k][1])
+						let runs = json.data.runs;
+						for(let i = 0; i < 3; i++){
+							await fetch(runs[i].uri(0), get).then(res => res.json()).then(json => {
+								let player = json.data
+								leaderboard.[categories[k][4]][categories[k][2]][0] = {
+									player: name(player),
+									region: region(player),
+									place: place(runs[i]),
+									time: runs[i].time()
+								}
+							})
+						}
+					})
+					.catch(err => {
+						console.error(err)
+						console.warn(`Could not fetch ${categories[k][1]}`)
+						leaderboard.tournament.[categories[k][2]] = NA
+					})
+			} else if(k < 14){
+				/*await fetch(`${url}${categories[k][0]}`, get)
+					.then(res => res.json())
+					.then(async json => {
+						console.info(categories[k][1])
+						let runs = json.data.runs;
+						for(let i = 0; i < 3; i++){
+							await fetch(runs[i].uri(0), get).then(res => res.json()).then(json => {
+								let player = json.data
+								leaderboard.tournament.[categories[k][2]][0] = {
+									player: name(player),
+									region: region(player),
+									place: place(runs[i]),
+									time: runs[i].time()
+								}
+							})
+						}
+					})
+					.catch(err => {
+						console.error(err)
+						console.warn(`Could not fetch ${categories[k][1]}`)
+						leaderboard.tournament.[categories[k][2]] = NA
+					})*/
+			} else {
+				await fetch(`${url}n2yozzzd}`, get)
+					.then(res => res.json())
+					.then(async json => {
+						console.info("Tutorial%")
+						let runs = json.data.runs;
+						for(let i = 0; i < 3; i++){
+							await fetch(runs[i].uri(0), get).then(res => res.json()).then(json => {
+								let player = json.data
+								leaderboard.tutorial = {
+									player: name(player),
+									region: region(player),
+									place: place(runs[0]),
+									time: runs[0].time()
+								}
+							})
+						}
+					})
+					.catch(err => {
+						console.error(err)
+						console.warn("Could not fetch Tutorial%")
+						leaderboard.tutorial = NA
+					})
+			}
 		}
 		console.groupEnd()
 		console.log(leaderboard)

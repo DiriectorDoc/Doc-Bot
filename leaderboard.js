@@ -40,8 +40,6 @@ module.exports = new Promise(resolve => {
 		},
 		NA = [,,,].fill({player: "<name>", place: 0, time: "N/A", region: "black"}),
 
-		loaded = 0,
-
 		name = p => (p.names || 0).international || "<name>",
 		region = p => (p.location || {country:0}).country.code || "black",
 		place = r => r.place || 0,
@@ -136,7 +134,6 @@ module.exports = new Promise(resolve => {
 										offset++
 										continue
 									}
-									//console.log(runs[i+offset])
 									await fetch(runs[i+offset].uri(j-offset), get).then(res => res.json()).then(json => {
 										if(!leaderboard.horde[categories[k][2]][categories[k][3]][i].region){
 											leaderboard.horde[categories[k][2]][categories[k][3]][i].region = region(json.data)
@@ -155,6 +152,36 @@ module.exports = new Promise(resolve => {
 						leaderboard.horde[categories[k][2]][categories[k][3]] = NA
 					})
 			} else {
+				await fetch(`${url}${categories[k][0]}`, get)
+					.then(res => res.json())
+					.then(async json => {
+						console.info(categories[k][1])
+						let runs = json.data.runs;
+						for(let i = 0; i < 3; i++){
+							if(runs[i]){
+								leaderboard.walker["2p"].wave6[i] = {
+									players: [],
+									place: place(runs[i]),
+									time: runs[i].time()
+								}
+								for(let j = 0; j < 2; j++){
+									await fetch(runs[i].uri(j), get).then(res => res.json()).then(json => {
+										if(!leaderboard.walker["2p"].wave6[i].region){
+											leaderboard.walker["2p"].wave6[i].region = region(json.data)
+										}
+										leaderboard.walker["2p"].wave6[i].players.push(name(json.data))
+									}).catch(err => {
+										leaderboard.walker["2p"].wave6[i].players.push(runs[i].run.players[j].name)
+									})
+								}
+							}
+						}
+					})
+					.catch(err => {
+						console.error(err)
+						console.warn(`Could not fetch ${categories[k][1]}`)
+						leaderboard.horde[categories[k][2]][categories[k][3]] = NA
+					})
 				await fetch(`${url}n2yozzzd`, get)
 					.then(res => res.json())
 					.then(async json => {

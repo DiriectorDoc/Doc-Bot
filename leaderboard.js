@@ -61,7 +61,6 @@ module.exports = new Promise(resolve => {
 			["wdm66m3k?var-ylpegpj8=jq6k34nl&var-9l779p9l=5lmjz8yl", "Horde/3 Players/Wave 26", "3p", "wave26"],
 			["wdm66m3k?var-ylpegpj8=5lmjzxyl", "Horde/4 Players/Wave 11", "4p", "wave11"],
 			["wdm66m3k?var-ylpegpj8=5lmjzxyl&var-9l779p9l=jq6k3ynl", "Horde/4 Players/Wave 21", "4p", "wave21"],
-			["wdm66m3k?var-ylpegpj8=gq7dg0pq", "Horde/1 Player 1 Bot/Wave 11"],
 			["02qvnl7d", "Walker Attack/2 Players/Wave 6"]
 		];
 
@@ -81,7 +80,7 @@ module.exports = new Promise(resolve => {
 						for(let i = 0; i < 3; i++){
 							await fetch(runs[i].uri(0), get).then(res => res.json()).then(json => {
 								let player = json.data
-								leaderboard.tournament.[categories[k][2]][0] = {
+								leaderboard.tournament[categories[k][2]][0] = {
 									player: name(player),
 									region: region(player),
 									place: place(runs[i]),
@@ -93,7 +92,7 @@ module.exports = new Promise(resolve => {
 					.catch(err => {
 						console.error(err)
 						console.warn(`Could not fetch ${categories[k][1]}`)
-						leaderboard.tournament.[categories[k][2]] = NA
+						leaderboard.tournament[categories[k][2]] = NA
 					})
 			} else if(k < 4){
 				await fetch(`${url}${categories[k][0]}`, get)
@@ -104,7 +103,7 @@ module.exports = new Promise(resolve => {
 						for(let i = 0; i < 3; i++){
 							await fetch(runs[i].uri(0), get).then(res => res.json()).then(json => {
 								let player = json.data
-								leaderboard.[categories[k][4]][categories[k][2]][0] = {
+								leaderboard[categories[k][4]][categories[k][2]][categories[k][3]][0] = {
 									player: name(player),
 									region: region(player),
 									place: place(runs[i]),
@@ -116,31 +115,39 @@ module.exports = new Promise(resolve => {
 					.catch(err => {
 						console.error(err)
 						console.warn(`Could not fetch ${categories[k][1]}`)
-						leaderboard.tournament.[categories[k][2]] = NA
+						leaderboard[categories[k][4]][categories[k][2]][categories[k][3]] = NA
 					})
-			} else if(k < 14){
-				/*await fetch(`${url}${categories[k][0]}`, get)
+			} else if(k < 12){
+				await fetch(`${url}${categories[k][0]}`, get)
 					.then(res => res.json())
 					.then(async json => {
 						console.info(categories[k][1])
 						let runs = json.data.runs;
 						for(let i = 0; i < 3; i++){
-							await fetch(runs[i].uri(0), get).then(res => res.json()).then(json => {
-								let player = json.data
-								leaderboard.tournament.[categories[k][2]][0] = {
-									player: name(player),
-									region: region(player),
+							if(runs[i]){
+								leaderboard.horde[categories[k][2]][categories[k][3]][i] = {
+									players: [],
 									place: place(runs[i]),
 									time: runs[i].time()
 								}
-							})
+								for(let j = 0; j < categories[k][2][0]; j++){
+									await fetch(runs[i].uri(j), get).then(res => res.json()).then(json => {
+										if(!leaderboard.horde[categories[k][2]][categories[k][3]][i].region){
+											leaderboard.horde[categories[k][2]][categories[k][3]][i].region = region(json.data)
+										}
+										leaderboard.horde[categories[k][2]][categories[k][3]][i].players.push(name(json.data))
+									}).catch(err => {
+										leaderboard.horde[categories[k][2]][categories[k][3]][i].players.push(runs[i].run.players[j].name)
+									})
+								}
+							}
 						}
 					})
 					.catch(err => {
 						console.error(err)
 						console.warn(`Could not fetch ${categories[k][1]}`)
-						leaderboard.tournament.[categories[k][2]] = NA
-					})*/
+						leaderboard.horde[categories[k][2]][categories[k][3]] = NA
+					})
 			} else {
 				await fetch(`${url}n2yozzzd}`, get)
 					.then(res => res.json())
@@ -167,7 +174,6 @@ module.exports = new Promise(resolve => {
 			}
 		}
 		console.groupEnd()
-		console.log(leaderboard)
 		module.exports = resolve(leaderboard)
 	})()
 	

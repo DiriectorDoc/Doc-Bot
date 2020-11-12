@@ -70,7 +70,7 @@ module.exports = new Promise(resolve => {
 	console.group("Fetching leaderboard");
 	
 	(async function(){
-		for(let k = 0; k < 15; k++){
+		for(let k = 0; k < 13; k++){
 			if(k < 2){
 				await fetch(`${url}${categories[k][0]}`, get)
 					.then(res => res.json())
@@ -80,7 +80,7 @@ module.exports = new Promise(resolve => {
 						for(let i = 0; i < 3; i++){
 							await fetch(runs[i].uri(0), get).then(res => res.json()).then(json => {
 								let player = json.data
-								leaderboard.tournament[categories[k][2]][0] = {
+								leaderboard.tournament[categories[k][2]][i] = {
 									player: name(player),
 									region: region(player),
 									place: place(runs[i]),
@@ -103,7 +103,7 @@ module.exports = new Promise(resolve => {
 						for(let i = 0; i < 3; i++){
 							await fetch(runs[i].uri(0), get).then(res => res.json()).then(json => {
 								let player = json.data
-								leaderboard[categories[k][4]][categories[k][2]][categories[k][3]][0] = {
+								leaderboard[categories[k][4]][categories[k][2]][categories[k][3]][i] = {
 									player: name(player),
 									region: region(player),
 									place: place(runs[i]),
@@ -131,6 +131,7 @@ module.exports = new Promise(resolve => {
 									time: runs[i].time()
 								}
 								for(let j = 0; j < categories[k][2][0]; j++){
+									try{
 									await fetch(runs[i].uri(j), get).then(res => res.json()).then(json => {
 										if(!leaderboard.horde[categories[k][2]][categories[k][3]][i].region){
 											leaderboard.horde[categories[k][2]][categories[k][3]][i].region = region(json.data)
@@ -138,7 +139,7 @@ module.exports = new Promise(resolve => {
 										leaderboard.horde[categories[k][2]][categories[k][3]][i].players.push(name(json.data))
 									}).catch(err => {
 										leaderboard.horde[categories[k][2]][categories[k][3]][i].players.push(runs[i].run.players[j].name)
-									})
+									})}catch(e){console.log(runs[i].run.players[j]);console.error(e)}
 								}
 							}
 						}
@@ -157,11 +158,11 @@ module.exports = new Promise(resolve => {
 						for(let i = 0; i < 3; i++){
 							await fetch(runs[i].uri(0), get).then(res => res.json()).then(json => {
 								let player = json.data
-								leaderboard.tutorial = {
+								leaderboard.tutorial[i] = {
 									player: name(player),
 									region: region(player),
-									place: place(runs[0]),
-									time: runs[0].time()
+									place: place(runs[i]),
+									time: runs[i].time()
 								}
 							})
 						}

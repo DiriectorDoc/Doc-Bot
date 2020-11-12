@@ -496,10 +496,11 @@ bot.on("message", function(msg){
 											badCommand(msg, command)
 											break
 										}
+										rule2 = "wave6";
 									} else if(rule === undefined){
 										rule = "2p"
+										rule2 = "wave6";
 									}
-									rule2 = "wave6";
 								case "horde":
 									if(args[1] && !rule){
 										try {

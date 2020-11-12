@@ -130,16 +130,21 @@ module.exports = new Promise(resolve => {
 									place: place(runs[i]),
 									time: runs[i].time()
 								}
-								for(let j = 0; j < categories[k][2][0]; j++){
-									try{
-									await fetch(runs[i].uri(j), get).then(res => res.json()).then(json => {
+								let offset = 0;
+								for(let j = 0; j < (+categories[k][2][0])+offset; j++){
+									if(runs[i+offset].run.players.length == 1){
+										offset++
+										continue
+									}
+									//console.log(runs[i+offset])
+									await fetch(runs[i+offset].uri(j-offset), get).then(res => res.json()).then(json => {
 										if(!leaderboard.horde[categories[k][2]][categories[k][3]][i].region){
 											leaderboard.horde[categories[k][2]][categories[k][3]][i].region = region(json.data)
 										}
 										leaderboard.horde[categories[k][2]][categories[k][3]][i].players.push(name(json.data))
 									}).catch(err => {
-										leaderboard.horde[categories[k][2]][categories[k][3]][i].players.push(runs[i].run.players[j].name)
-									})}catch(e){console.log(runs[i].run.players[j]);console.error(e)}
+										leaderboard.horde[categories[k][2]][categories[k][3]][i].players.push(runs[i+offset].run.players[j-offset].name)
+									})
 								}
 							}
 						}
@@ -150,7 +155,7 @@ module.exports = new Promise(resolve => {
 						leaderboard.horde[categories[k][2]][categories[k][3]] = NA
 					})
 			} else {
-				await fetch(`${url}n2yozzzd}`, get)
+				await fetch(`${url}n2yozzzd`, get)
 					.then(res => res.json())
 					.then(async json => {
 						console.info("Tutorial%")

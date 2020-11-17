@@ -1,8 +1,7 @@
 console.info("Caching packages")
 
 const Discord = require("discord.js"),
-	  fetch = require("node-fetch"),
-	  
+
 	  bot = new Discord.Client({partials: ["MESSAGE", "CHANNEL", "REACTION"]}),
 
 	  yaml = (link) => require("js-yaml").safeLoad(require("fs").readFileSync(link, "utf8")),
@@ -12,10 +11,10 @@ const Discord = require("discord.js"),
 
 let self,
 	dmMe,
-	
+
 	leaderboard;
 (async function(){
-	leaderboard = await require("./leaderboard");
+	console.log(leaderboard = await require("./leaderboard"));
 })()
 
 /* Randomly picks one of and of the given parameters */
@@ -113,7 +112,7 @@ function badCommand(msg, command, text){
 /* Sends a deprication warning */
 function depricated(msg){
 	modOnly(msg, () => {
-		msg.reply("That command has bee depricated. You should now, you're the one who depricated it.")
+		msg.reply("That command has been depricated. You should know, you're the one who depricated it.")
 	})
 }
 
@@ -133,8 +132,6 @@ bot.on("ready", function(){
 				msg.delete({
 					timeout: 864e5 - Date.now() + msg.createdTimestamp,
 					reason: "Automatic. Promotions are deleted after 24 hours."
-				}).then(msg => {
-					console.log(`Preparing to delete ${msg.id}`)
 				})
 			}
 		})
@@ -154,12 +151,9 @@ bot.on("message", function(msg){
 			bot.channels.fetch(IDs.channels.archive).then(channel => {
 				channel.send(msgCopy("Archived Promotion", msg))
 			})
-			console.log(`Preparing to delete ${msg.id}`)
 			msg.delete({
 				timeout: 864e5,
 				reason: "Automatic. Promotions are deleted after 24 hours."
-			}).then(msg => {
-				console.log(`Preparing to delete ${msg.id}`)
 			})
 			return;
 		case "console":
@@ -185,7 +179,7 @@ bot.on("message", function(msg){
 							fields: [
 								{
 									name: "Version",
-									value: "0.7.1",
+									value: "0.7.2",
 									inline: true
 								},
 								{
@@ -346,6 +340,9 @@ bot.on("message", function(msg){
 							timestamp: new Date()
 						}))
 						break;
+					case "penis":
+						msg.reply(`your penis is this long:\n8${Array(9).fill("=",0,+msg.author.id.match(/\d{4}$/)%9%9+1).join("")}D`)
+						break;
 					case "request":
 						if(args[0]){
 							switch(args[0]){
@@ -491,10 +488,23 @@ bot.on("message", function(msg){
 									} else {
 										rule = "sigs"
 									}
+								case "walker":
+									if(args[1] && !rule){
+										try {
+											rule = args[1].match(/^2p|1p1b$/g)[0]
+										} catch(err){
+											badCommand(msg, command)
+											break
+										}
+										rule2 = "wave6";
+									} else if(rule === undefined){
+										rule = "2p"
+										rule2 = "wave6";
+									}
 								case "horde":
 									if(args[1] && !rule){
 										try {
-											rule = args[1].match(/^[2-4]p$/g)[0]
+											rule = args[1].match(/^[2-4]p|1p1b$/g)[0]
 										} catch(err){
 											badCommand(msg, command)
 											break
@@ -521,13 +531,11 @@ bot.on("message", function(msg){
 											name: "DocBot",
 											icon_url: self.displayAvatarURL()
 										},
-										description: args[0][0].toUpperCase()+args[0].slice(1) + 
-										` ${
+										description: `${args[0][0].toUpperCase()+args[0].slice(1)} ${
 											rule2 ?
 											rule + ` ${rule2.replace(/wave([12])/g, "Wave $1")}` :
 											rule == "sigs" ? "":"No Signatures"
-										}` +
-										"\n\nLeaderboard from speedrun.com/brawlhalla",
+										}\n\nLeaderboard from speedrun.com/brawlhalla`,
 										fields: getTop3(
 											rule2 ?
 											leaderboard[args[0]][rule][rule2] :
@@ -596,7 +604,14 @@ bot.on("message", function(msg){
 						})
 						break;
 					default:
-						msg.reply("What were you thinking? That's not a command.")
+						msg.reply(
+							`${pick(
+							"What were you thinking?",
+							"Whoops.",
+							"Try again.",
+							"Sorry."
+							)} That's not a command.`
+						)
 				}
 			}
 	}

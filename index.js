@@ -173,13 +173,13 @@ bot.on("message", function(msg){
 								icon_url: self.displayAvatarURL()
 							},
 							thumbnail: {
-								url: self.displayAvatarURL(),
+								url: self.displayAvatarURL()
 							},
 							description: "Doc Bot's info and stats",
 							fields: [
 								{
 									name: "Version",
-									value: "0.7.2",
+									value: "0.8.0",
 									inline: true
 								},
 								{
@@ -267,7 +267,6 @@ bot.on("message", function(msg){
 								case "/?":
 								case "colors":
 								case "colours":
-									let colour = command == "color" ? "color":"colour"
 									msg.reply(new Discord.MessageEmbed({
 										title: "Commands",
 										color: 0x3498DB,
@@ -275,10 +274,10 @@ bot.on("message", function(msg){
 											name: "Doc Bot",
 											icon_url: self.displayAvatarURL()
 										},
-										description: `Changes the ${colour} of your display name.`,
+										description: `Changes the ${command} of your display name.`,
 										fields: [
 											{
-												name: `Availible ${colour}s`,
+												name: `Availible ${command}s`,
 												value: "`red`\n`orange`\n`yellow`\n`green`\n`blue`\n`cyan`\n`purple`\n`violet` (same as purple)\n`pink`\n`white`"
 											}
 										],
@@ -287,8 +286,13 @@ bot.on("message", function(msg){
 									break;
 								default:
 									msg.guild.members.fetch(msg.author.id).then(guildMember => {
+										let notif = guildMember.roles.has(IDs.roles.notifs);
 										guildMember.roles.set(IDs.colours[argument] || [])
+										if(notif){
+											guildMember.roles.add(IDs.roles.notifs)
+										}
 									})
+									msg.reply(`Your display ${command} has been set.`)
 							}
 						} else {
 							badCommand(msg, command)
@@ -315,7 +319,7 @@ bot.on("message", function(msg){
 								{
 									name: "`!color`",
 									value: "Changes display name color"
-								}, 
+								},
 								{
 									name: "`!commands`",
 									value: "Displays this here list"
@@ -327,11 +331,11 @@ bot.on("message", function(msg){
 								{
 									name: "`!speedruns`",
 									value: "Displays Brawlhalla speedrun leaderboards"
-								}, 
+								},
 								{
 									name: "`!yellatme`",
 									value: "Displays the 'admin only command' message"
-								}, 
+								},
 								{
 									name: "`!wisdom`",
 									value: "Displayes a random quote"
@@ -340,8 +344,19 @@ bot.on("message", function(msg){
 							timestamp: new Date()
 						}))
 						break;
+					case "notify":
+						msg.guild.members.fetch(msg.author.id).then(guildMember => {
+							if(guildMember.roles.has(IDs.roles.notifs)){
+								guildMember.roles.remove(IDs.roles.notifs)
+								msg.reply("You will no longer get stream notifications.")
+							} else {
+								guildMember.roles.add(IDs.roles.notifs)
+								msg.reply("You will now get stream notifications.")
+							}
+						})
+						break;
 					case "penis":
-						msg.reply(`your penis is this long:\n8${Array(9).fill("=",0,+msg.author.id.match(/\d{4}$/)%9%9+1).join("")}D`)
+						msg.reply(`your penis is this long:\n8${Array(9).fill("=",0,msg.author.id.match(/\d{4}$/)%9+1).join("")}D`)
 						break;
 					case "request":
 						if(args[0]){

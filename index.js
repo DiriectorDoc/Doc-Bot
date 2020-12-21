@@ -286,7 +286,7 @@ bot.on("message", function(msg){
 									break;
 								default:
 									msg.guild.members.fetch(msg.author.id).then(guildMember => {
-										let notif = guildMember.roles.has(IDs.roles.notifs);
+										let notif = guildMember.roles.cache.has(IDs.roles.notifs);
 										guildMember.roles.set(IDs.colours[argument] || [])
 										if(notif){
 											guildMember.roles.add(IDs.roles.notifs)
@@ -346,7 +346,7 @@ bot.on("message", function(msg){
 						break;
 					case "notify":
 						msg.guild.members.fetch(msg.author.id).then(guildMember => {
-							if(guildMember.roles.has(IDs.roles.notifs)){
+							if(guildMember.roles.cache.has(IDs.roles.notifs)){
 								guildMember.roles.remove(IDs.roles.notifs)
 								msg.reply("You will no longer get stream notifications.")
 							} else {
@@ -658,4 +658,4 @@ Please have a look at it.`)
 	}
 })
 
-bot.login(process.env.token) // Set by the VPS (process.env.token)
+bot.login(process.env.token || process.argv[2]) // Set by the VPS (process.env.token)

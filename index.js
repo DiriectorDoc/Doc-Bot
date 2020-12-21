@@ -106,7 +106,7 @@ function msgLink(msg){
 
 /* Replies to user with a message saying they used a command incorrectly */
 function badCommand(msg, command, text){
-	msg.reply(`${text || "You inputted that command incorrectly."} Try again or enter \`!${command}\` for help.`)
+	msg.reply(`${text || "You inputted that command incorrectly."} Try again or enter \`!${command} /?\` for help.`)
 }
 
 /* Sends a deprication warning */
@@ -468,14 +468,15 @@ bot.on("message", function(msg){
 											},
 											{
 												name: "[category]",
-												value: "Possible categories:\n`tournament`\n`horde`\n`tutorial%`",
+												value: "Possible categories:\n`tournament`\n`tutorial%`\n`horde`\n`walker`",
 												inline: true
 											},
 											{
 												name: "[ruleset]",
 												value: "Possible rulesets:\n" +
 												"*For Tournament mode*\n`sigs`\n`noSigs`\n" +
-												"*For Horde mode*\n`2p`\n`3p`\n`4p` ",
+												"\n*For Horde mode*\n`2p`\n`3p`\n`4p`\n`1p1b`" +
+												"\n*For Walker mode*\n`2p`\n`1p1b`",
 												inline: true
 											},
 											{
@@ -538,26 +539,27 @@ bot.on("message", function(msg){
 										rule = "2p";
 										rule2 = "wave11"
 									}
-									msg.reply(new Discord.MessageEmbed({
-										title: "Brawlhalla Speedrun Leaderboard",
-										url: "https://www.speedrun.com/brawlhalla",
-										color: 0x3498DB,
-										author: {
-											name: "DocBot",
-											icon_url: self.displayAvatarURL()
-										},
-										description: `${args[0][0].toUpperCase()+args[0].slice(1)} ${
-											rule2 ?
-											rule + ` ${rule2.replace(/wave([12])/g, "Wave $1")}` :
-											rule == "sigs" ? "":"No Signatures"
-										}\n\nLeaderboard from speedrun.com/brawlhalla`,
-										fields: getTop3(
-											rule2 ?
-											leaderboard[args[0]][rule][rule2] :
-											leaderboard[args[0]][rule]
-										),
-										timestamp: new Date()
-									}))
+									let scores = rule2 ? leaderboard[args[0]][rule][rule2] : leaderboard[args[0]][rule];
+									if(scores[0]){
+										msg.reply(new Discord.MessageEmbed({
+											title: "Brawlhalla Speedrun Leaderboard",
+											url: "https://www.speedrun.com/brawlhalla",
+											color: 0x3498DB,
+											author: {
+												name: "DocBot",
+												icon_url: self.displayAvatarURL()
+											},
+											description: `${args[0][0].toUpperCase()+args[0].slice(1)} ${
+												rule2 ?
+												rule + ` ${rule2.replace(/wave([12])/g, "Wave $1")}` :
+												rule == "sigs" ? "":"No Signatures"
+											}\n\nLeaderboard from speedrun.com/brawlhalla`,
+											fields: getTop3(scores),
+											timestamp: new Date()
+										}))
+									} else {
+										msg.reply("There is currently no data for that leaderboard")
+									}
 									break;
 								case "tutorial":
 								case "tutorial%":

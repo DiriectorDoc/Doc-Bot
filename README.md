@@ -11,6 +11,7 @@ Syntax | Usage
 [`!bug`](#bug) | Replied with options for submitting a bug
 [`!colour`](#colour) or<br/>`!color` | Changes the colour of the display name of the user who entered the command
 [`!commands`](#commands) | Replies with a list of commands
+[`!notify`](#notify) | Add/removes the **@Stream notifs** role
 [`!request`](#request) | Sends a request to the admin
 [`!speedrun`](#speedruns) or<br/>`!speedruns` | Replies with the Brawlhalla Speedrun leaderboards
 [`!wisdom`](#wisdom) | Replies with a quote
@@ -59,6 +60,11 @@ Additionally, you can list the available colours by entering
     !colour colours
 
 Using this parameter for `!colour` is identical to entering one of the [help](#help) arguments.
+
+## !notify
+Using this command will give the user the **@Stream notifs** role. This role is used by Streamcord bot to notify thoes who whish to be notified.
+
+To remove yourself from having this role, simply use `!notify` again and the role will be removed.
 
 ## !request
 Sends a request to the admin depending on the type of request.

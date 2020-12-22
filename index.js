@@ -106,7 +106,7 @@ function msgLink(msg){
 
 /* Replies to user with a message saying they used a command incorrectly */
 function badCommand(msg, command, text){
-	msg.reply(`${text || "You inputted that command incorrectly."} Try again or enter \`!${command}\` for help.`)
+	msg.reply(`${text || "You inputted that command incorrectly."} Try again or enter \`!${command} /?\` for help.`)
 }
 
 /* Sends a deprication warning */
@@ -173,13 +173,13 @@ bot.on("message", function(msg){
 								icon_url: self.displayAvatarURL()
 							},
 							thumbnail: {
-								url: self.displayAvatarURL(),
+								url: self.displayAvatarURL()
 							},
 							description: "Doc Bot's info and stats",
 							fields: [
 								{
 									name: "Version",
-									value: "0.7.2",
+									value: "0.8.0",
 									inline: true
 								},
 								{
@@ -267,7 +267,6 @@ bot.on("message", function(msg){
 								case "/?":
 								case "colors":
 								case "colours":
-									let colour = command == "color" ? "color":"colour"
 									msg.reply(new Discord.MessageEmbed({
 										title: "Commands",
 										color: 0x3498DB,
@@ -275,10 +274,10 @@ bot.on("message", function(msg){
 											name: "Doc Bot",
 											icon_url: self.displayAvatarURL()
 										},
-										description: `Changes the ${colour} of your display name.`,
+										description: `Changes the ${command} of your display name.`,
 										fields: [
 											{
-												name: `Availible ${colour}s`,
+												name: `Availible ${command}s`,
 												value: "`red`\n`orange`\n`yellow`\n`green`\n`blue`\n`cyan`\n`purple`\n`violet` (same as purple)\n`pink`\n`white`"
 											}
 										],
@@ -287,8 +286,13 @@ bot.on("message", function(msg){
 									break;
 								default:
 									msg.guild.members.fetch(msg.author.id).then(guildMember => {
+										let notif = guildMember.roles.cache.has(IDs.roles.notifs);
 										guildMember.roles.set(IDs.colours[argument] || [])
+										if(notif){
+											guildMember.roles.add(IDs.roles.notifs)
+										}
 									})
+									msg.reply(`Your display ${command} has been set.`)
 							}
 						} else {
 							badCommand(msg, command)
@@ -315,7 +319,7 @@ bot.on("message", function(msg){
 								{
 									name: "`!color`",
 									value: "Changes display name color"
-								}, 
+								},
 								{
 									name: "`!commands`",
 									value: "Displays this here list"
@@ -327,11 +331,11 @@ bot.on("message", function(msg){
 								{
 									name: "`!speedruns`",
 									value: "Displays Brawlhalla speedrun leaderboards"
-								}, 
+								},
 								{
 									name: "`!yellatme`",
 									value: "Displays the 'admin only command' message"
-								}, 
+								},
 								{
 									name: "`!wisdom`",
 									value: "Displayes a random quote"
@@ -340,8 +344,19 @@ bot.on("message", function(msg){
 							timestamp: new Date()
 						}))
 						break;
+					case "notify":
+						msg.guild.members.fetch(msg.author.id).then(guildMember => {
+							if(guildMember.roles.cache.has(IDs.roles.notifs)){
+								guildMember.roles.remove(IDs.roles.notifs)
+								msg.reply("You will no longer get stream notifications.")
+							} else {
+								guildMember.roles.add(IDs.roles.notifs)
+								msg.reply("You will now get stream notifications.")
+							}
+						})
+						break;
 					case "penis":
-						msg.reply(`your penis is this long:\n8${Array(9).fill("=",0,+msg.author.id.match(/\d{4}$/)%9%9+1).join("")}D`)
+						msg.reply(`your penis is this long:\n8${Array(9).fill("=",0,msg.author.id.match(/\d{4}$/)%9+1).join("")}D`)
 						break;
 					case "request":
 						if(args[0]){
@@ -453,14 +468,15 @@ bot.on("message", function(msg){
 											},
 											{
 												name: "[category]",
-												value: "Possible categories:\n`tournament`\n`horde`\n`tutorial%`",
+												value: "Possible categories:\n`tournament`\n`tutorial%`\n`horde`\n`walker`",
 												inline: true
 											},
 											{
 												name: "[ruleset]",
 												value: "Possible rulesets:\n" +
 												"*For Tournament mode*\n`sigs`\n`noSigs`\n" +
-												"*For Horde mode*\n`2p`\n`3p`\n`4p` ",
+												"\n*For Horde mode*\n`2p`\n`3p`\n`4p`\n`1p1b`" +
+												"\n*For Walker mode*\n`2p`\n`1p1b`",
 												inline: true
 											},
 											{
@@ -523,26 +539,27 @@ bot.on("message", function(msg){
 										rule = "2p";
 										rule2 = "wave11"
 									}
-									msg.reply(new Discord.MessageEmbed({
-										title: "Brawlhalla Speedrun Leaderboard",
-										url: "https://www.speedrun.com/brawlhalla",
-										color: 0x3498DB,
-										author: {
-											name: "DocBot",
-											icon_url: self.displayAvatarURL()
-										},
-										description: `${args[0][0].toUpperCase()+args[0].slice(1)} ${
-											rule2 ?
-											rule + ` ${rule2.replace(/wave([12])/g, "Wave $1")}` :
-											rule == "sigs" ? "":"No Signatures"
-										}\n\nLeaderboard from speedrun.com/brawlhalla`,
-										fields: getTop3(
-											rule2 ?
-											leaderboard[args[0]][rule][rule2] :
-											leaderboard[args[0]][rule]
-										),
-										timestamp: new Date()
-									}))
+									let scores = rule2 ? leaderboard[args[0]][rule][rule2] : leaderboard[args[0]][rule];
+									if(scores[0]){
+										msg.reply(new Discord.MessageEmbed({
+											title: "Brawlhalla Speedrun Leaderboard",
+											url: "https://www.speedrun.com/brawlhalla",
+											color: 0x3498DB,
+											author: {
+												name: "DocBot",
+												icon_url: self.displayAvatarURL()
+											},
+											description: `${args[0][0].toUpperCase()+args[0].slice(1)} ${
+												rule2 ?
+												rule + ` ${rule2.replace(/wave([12])/g, "Wave $1")}` :
+												rule == "sigs" ? "":"No Signatures"
+											}\n\nLeaderboard from speedrun.com/brawlhalla`,
+											fields: getTop3(scores),
+											timestamp: new Date()
+										}))
+									} else {
+										msg.reply("There is currently no data for that leaderboard")
+									}
 									break;
 								case "tutorial":
 								case "tutorial%":
@@ -641,4 +658,4 @@ Please have a look at it.`)
 	}
 })
 
-bot.login(process.env.token) // Set by the VPS (process.env.token)
+bot.login(process.env.token || process.argv[2]) // Set by the VPS (process.env.token)

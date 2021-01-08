@@ -15,53 +15,6 @@ let self,
 
 	leaderboard;
 
-let liveChecker = setInterval(function(){
-	fetch(`https://id.twitch.tv/oauth2/token?client_id=bo8uxlgi4spxhtss7xwt8slszlcm38&client_secret=${process.env.client_secret || process.argv[3]}&grant_type=client_credentials`, {
-			method: "POST"
-		})
-		.then(res => res.json())
-		.then(json => {
-			fetch("https://api.twitch.tv/helix/streams?user_id=40464688", {
-					headers: {
-						'Client-ID': 'bo8uxlgi4spxhtss7xwt8slszlcm38',
-						"Authorization": "Bearer " + json.access_token
-					}
-				})
-				.then(res => res.json())
-				.then(json => {
-					let stream = json.data[0];
-					if (stream) {
-						bot.channels.fetch(IDs.channels["stream-notifs"]).then(channel => {
-							channel.send(`<@&${IDs.roles.notifs}>\nDiriector_Doc just went live ${(Date.now()-new Date(stream.started_at))/6e4} minutes ago. He's playing some ${stream.game_name}. Come watch and chat with him!`, {
-								embed: new Discord.MessageEmbed({
-									title: stream.title,
-									color: 0x9147FF,
-									author: {
-										name: "Doc Bot",
-										icon_url: self.displayAvatarURL()
-									},
-									url: "https://twitch.tv/diriector_doc",
-									thumbnail: {
-										url: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNDQ4IiB3aWR0aD0iNDQ4Ij48cGF0aCBkPSJNNDAgMEwxMCA3N3YzMTRoMTA3djU3aDYwbDU3LTU3aDg3bDExNy0xMTdWMHptMzU4IDI1NGwtNjcgNjdIMjI0bC01NyA1N3YtNTdINzdWNDBoMzIxem0tNjctMTM3djExN2gtNDBWMTE3em0tMTA3IDB2MTE3aC00MFYxMTd6IiBmaWxsPSIjOTE0N2ZmIi8+PC9zdmc+"
-									},
-									description: "Current viewers: " + stream.viewer_count,
-									image: {
-										url: stream.thumbnail_url.replace("{width}", 400).replace("{height}", 225)
-									},
-									timestamp: new Date
-								})
-							})
-						})
-						clearInterval(liveChecker)
-					}
-				})
-		})
-}, 18e5)
-
-;(async function(){
-	console.log(leaderboard = await require("./leaderboard"));
-})()
-
 /* Randomly picks one of and of the given parameters */
 function pick(){
 	return arguments[Math.random()*arguments.length|0]
@@ -181,6 +134,70 @@ bot.on("ready", function(){
 			}
 		})
 	})
+	let access,
+		expiration = 0,
+		liveChecker,
+		fetchStream = function(){
+			fetch("https://api.twitch.tv/helix/streams?user_id=40464688", {
+					headers: {
+						'Client-ID': 'bo8uxlgi4spxhtss7xwt8slszlcm38',
+						"Authorization": "Bearer " + access
+					}
+				})
+				.then(res => res.json())
+				.then(json => {
+					let stream = json.data[0];
+					if (stream) {
+						bot.channels.fetch(IDs.channels["stream-notifs"]).then(channel => {
+							channel.send(`<@&${IDs.roles.notifs}>\nDiriector_Doc just went live ${(Date.now()-new Date(stream.started_at))/6e4|0} minutes ago. He's playing some ${stream.game_name}. Come watch and chat with him!`, {
+								embed: new Discord.MessageEmbed({
+									title: stream.title,
+									color: 0x9147FF,
+									author: {
+										name: "Doc Bot",
+										icon_url: self.displayAvatarURL()
+									},
+									url: "https://twitch.tv/diriector_doc",
+									thumbnail: {
+										url: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNDQ4IiB3aWR0aD0iNDQ4Ij48cGF0aCBkPSJNNDAgMEwxMCA3N3YzMTRoMTA3djU3aDYwbDU3LTU3aDg3bDExNy0xMTdWMHptMzU4IDI1NGwtNjcgNjdIMjI0bC01NyA1N3YtNTdINzdWNDBoMzIxem0tNjctMTM3djExN2gtNDBWMTE3em0tMTA3IDB2MTE3aC00MFYxMTd6IiBmaWxsPSIjOTE0N2ZmIi8+PC9zdmc+"
+									},
+									description: "Current viewers: " + stream.viewer_count,
+									image: {
+										url: stream.thumbnail_url.replace("{width}", 400).replace("{height}", 225)
+									},
+									timestamp: new Date
+								})
+							})
+						})
+						clearInterval(liveChecker)
+						console.info("Live checker deactivated")
+					} else {
+						console.info(`No stream live at ${new Date()}. Checker still active.`)
+					}
+				})
+				.catch(err => console.error(err))
+		};
+	liveChecker = setInterval(function(){
+		if(Date.now() > expiration){
+			fetch(`https://id.twitch.tv/oauth2/token?client_id=bo8uxlgi4spxhtss7xwt8slszlcm38&client_secret=${process.env.client_secret || process.argv[3]}&grant_type=client_credentials`, {
+					method: "POST"
+				})
+				.then(res => res.json())
+				.then(json => {
+					access = json.access_token;
+					expiration = json.expires_in + Date.now();
+					fetchStream()
+				})
+				.catch(err => console.error(err))
+		} else {
+			fetchStream()
+		}
+	}, 18e5)
+	console.info("Live checker active")
+
+	;(async function(){
+		console.log(leaderboard = await require("./leaderboard"));
+	})()
 })
 
 bot.on("message", function(msg){

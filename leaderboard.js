@@ -59,7 +59,7 @@ module.exports = new Promise(resolve => {
 			["wdm66m3k?var-ylpegpj8=jq6k34nl&var-9l779p9l=5lmjz8yl", "Horde/3 Players/Wave 26", "3p", "wave26"],
 			["wdm66m3k?var-ylpegpj8=5lmjzxyl", "Horde/4 Players/Wave 11", "4p", "wave11"],
 			["wdm66m3k?var-ylpegpj8=5lmjzxyl&var-9l779p9l=jq6k3ynl", "Horde/4 Players/Wave 21", "4p", "wave21"],
-			["02qvnl7d", "Walker Attack/2 Players/Wave 6"]
+			["02qvnl7d?var-kn0jo43l=jqzeyrgq", "Walker Attack/2 Players/Wave 6"]
 		];
 
 	Object.prototype.uri = function(a){return this.run.players[a].uri};

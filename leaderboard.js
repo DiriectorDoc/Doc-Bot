@@ -47,30 +47,30 @@ module.exports = new Promise(resolve => {
 		get = {method: "Get"},
 		url = "https://www.speedrun.com/api/v1/leaderboards/m1z73360/category/",
 		categories = [
-			["wdmzez52", "Tournament/Sigs", "sigs"],
+			["wdmzez52?var-5lypvpyl=814eexwl", "Tournament/Sigs", "sigs"],
 			["wdmzez52?var-5lypvpyl=z19ggzjl", "Tournament/NoSigs", "nosigs"],
 			["02qvnl7d?var-kn0jo43l=5q88rxgq", "Walker Attack/1 Player 1 Bot/Wave 6", "1p1b", "wave6", "walker"],
-			["wdm66m3k?var-ylpegpj8=gq7dg0pq", "Horde/1 Player 1 Bot/Wave 11", "1p1b", "wave11", "horde"],
-			["wdm66m3k", "Horde/2 Players/Wave 11", "2p", "wave11"],
-			["wdm66m3k?var-9l779p9l=jq6k3ynl", "Horde/2 Players/Wave 21", "2p", "wave21"],
-			["wdm66m3k?var-9l779p9l=5lmjz8yl", "Horde/2 Players/Wave 26", "2p", "wave26"],
-			["wdm66m3k?var-ylpegpj8=jq6k34nl", "Horde/3 Players/Wave 11", "3p", "wave11"],
+			["wdm66m3k?var-ylpegpj8=gq7dg0pq&var-9l779p9l=810e30jq", "Horde/1 Player 1 Bot/Wave 11", "1p1b", "wave11", "horde"],
+			["wdm66m3k?var-ylpegpj8=9qjyjz0q&var-9l779p9l=810e30jq", "Horde/2 Players/Wave 11", "2p", "wave11"],
+			["wdm66m3k?var-ylpegpj8=9qjyjz0q&var-9l779p9l=jq6k3ynl", "Horde/2 Players/Wave 21", "2p", "wave21"],
+			["wdm66m3k?var-ylpegpj8=9qjyjz0q&var-9l779p9l=5lmjz8yl", "Horde/2 Players/Wave 26", "2p", "wave26"],
+			["wdm66m3k?var-ylpegpj8=jq6k34nl&var-9l779p9l=810e30jq", "Horde/3 Players/Wave 11", "3p", "wave11"],
 			["wdm66m3k?var-ylpegpj8=jq6k34nl&var-9l779p9l=jq6k3ynl", "Horde/3 Players/Wave 21", "3p", "wave21"],
 			["wdm66m3k?var-ylpegpj8=jq6k34nl&var-9l779p9l=5lmjz8yl", "Horde/3 Players/Wave 26", "3p", "wave26"],
-			["wdm66m3k?var-ylpegpj8=5lmjzxyl", "Horde/4 Players/Wave 11", "4p", "wave11"],
+			["wdm66m3k?var-ylpegpj8=5lmjzxyl&var-9l779p9l=810e30jq", "Horde/4 Players/Wave 11", "4p", "wave11"],
 			["wdm66m3k?var-ylpegpj8=5lmjzxyl&var-9l779p9l=jq6k3ynl", "Horde/4 Players/Wave 21", "4p", "wave21"],
 			["02qvnl7d?var-kn0jo43l=jqzeyrgq", "Walker Attack/2 Players/Wave 6"]
 		];
 
 	Object.prototype.uri = function(a){return this.run.players[a].uri};
-	Object.prototype.time = function(a){return (t => `${t/60|0}:${(t%60>9?"":"0")+t%60}` || "N/A")(this.run.times.primary_t)};
+	Object.prototype.time = function(){let t = this.run.times.primary_t;return t ? `${t/60|0}:${(t%60>9?"":"0")+t%60}` : "N/A"};
 
-	console.group("Fetching leaderboard");
+	console.group("Fetching leaderboard")
 	
-	(async function(){
+	;(async function(){
 		for(let k = 0; k < 13; k++){
 			if(k < 2){
-				await fetch(`${url}${categories[k][0]}`, get)
+				await fetch(url+categories[k][0], get)
 					.then(res => res.json())
 					.then(async json => {
 						console.info(categories[k][1])
@@ -93,7 +93,7 @@ module.exports = new Promise(resolve => {
 						leaderboard.tournament[categories[k][2]] = NA
 					})
 			} else if(k < 4){
-				await fetch(`${url}${categories[k][0]}`, get)
+				await fetch(url+categories[k][0], get)
 					.then(res => res.json())
 					.then(async json => {
 						console.info(categories[k][1])
@@ -116,7 +116,7 @@ module.exports = new Promise(resolve => {
 						leaderboard[categories[k][4]][categories[k][2]][categories[k][3]] = NA
 					})
 			} else if(k < 12){
-				await fetch(`${url}${categories[k][0]}`, get)
+				await fetch(url+categories[k][0], get)
 					.then(res => res.json())
 					.then(async json => {
 						console.info(categories[k][1])
@@ -152,7 +152,7 @@ module.exports = new Promise(resolve => {
 						leaderboard.horde[categories[k][2]][categories[k][3]] = NA
 					})
 			} else {
-				await fetch(`${url}${categories[k][0]}`, get)
+				await fetch(url+categories[k][0], get)
 					.then(res => res.json())
 					.then(async json => {
 						console.info(categories[k][1])

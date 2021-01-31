@@ -5,7 +5,7 @@ const Discord = require("discord.js"),
 
 	  bot = new Discord.Client({partials: ["MESSAGE", "CHANNEL", "REACTION"]}),
 
-	  yaml = (link) => require("js-yaml").safeLoad(require("fs").readFileSync(link, "utf8")),
+	  yaml = (link) => require("js-yaml").load(require("fs").readFileSync(link, "utf8")),
 
 	  IDs = yaml("IDs.yml"),
 	  quotes = yaml("quotes.yml");

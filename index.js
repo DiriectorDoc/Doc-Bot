@@ -256,7 +256,7 @@ bot.on("message", function(msg){
 								},
 								{
 									name: "Age",
-									value: "0 years",
+									value: `${new Date().getFullYear()-2020} year${!(new Date().getFullYear()-2021)?"s":""}`,
 									inline: true
 								},
 								{

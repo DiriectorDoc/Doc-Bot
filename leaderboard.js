@@ -43,8 +43,8 @@ module.exports = new Promise(resolve => {
 		},
 		NA = [,,,].fill({player: "<name>", place: 0, time: "N/A", region: "black"}),
 
-		name = p => (p.names || 0).international || "<name>",
-		region = p => (p.location || {country:0}).country.code || "black",
+		name = p => p.names?.international ?? "<name>",
+		region = p => p.location?.country.code ?? "black",
 		place = r => r.place || 0,
 
 		get = {method: "Get"},
@@ -139,7 +139,7 @@ module.exports = new Promise(resolve => {
 										continue
 									}
 									await fetch(runs[i+offset].uri(j-offset), get).then(res => res.json()).then(json => {
-										leaderboard.horde[categories[k][2]][categories[k][3]][i].region ??= region(json.data)
+										leaderboard.horde[categories[k][2]][categories[k][3]][i].region ??= region(json.data);
 										leaderboard.horde[categories[k][2]][categories[k][3]][i].players.push(name(json.data))
 									}).catch(err => {
 										leaderboard.horde[categories[k][2]][categories[k][3]][i].players.push(runs[i+offset].run.players[j-offset].name)

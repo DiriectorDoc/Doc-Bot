@@ -44,7 +44,7 @@ module.exports = new Promise(resolve => {
 		NA = [,,,].fill({player: "<name>", place: 0, time: "N/A", region: "black"}),
 
 		name = p => p.names?.international ?? "<name>",
-		region = p => p.location?.country.code ?? "black",
+		region = p => p.location?.country?.code ?? "black",
 		place = r => r.place || 0,
 
 		get = {method: "Get"},

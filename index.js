@@ -68,7 +68,7 @@ function getTop3(cat){
 	let fields = [];
 	for(var i = 0; i < 3 && cat[i]; i++){
 		fields.push({
-			name: `${cat[i].place}${[, "ˢᵗ", "ⁿᵈ", "ʳᵈ"][cat[i].place] || "ᵗʰ"} __${cat[i].time}__`,
+			name: `${cat[i].place}${[, "ˢᵗ", "ⁿᵈ", "ʳᵈ"][cat[i].place] ?? "ᵗʰ"} __${cat[i].time}__`,
 			value: `:flag_${cat[i].region}:${cat[i].player || cat[i].players.join(", ")}`,
 			inline: true
 		})
@@ -104,7 +104,7 @@ function msgLink(msg){
 
 /* Replies to user with a message saying they used a command incorrectly */
 function badCommand(msg, command, text){
-	msg.reply(`${text || "You inputted that command incorrectly."} Try again or enter \`!${command} /?\` for help.`)
+	msg.reply(`${text ?? "You inputted that command incorrectly."} Try again or enter \`!${command} /?\` for help.`)
 }
 
 /* Sends a deprication warning */
@@ -179,7 +179,7 @@ bot.on("ready", function(){
 		};
 	liveChecker = setInterval(function(){
 		if(Date.now() > expiration){
-			fetch(`https://id.twitch.tv/oauth2/token?client_id=bo8uxlgi4spxhtss7xwt8slszlcm38&client_secret=${process.env.client_secret || process.argv[3]}&grant_type=client_credentials`, {
+			fetch(`https://id.twitch.tv/oauth2/token?client_id=bo8uxlgi4spxhtss7xwt8slszlcm38&client_secret=${process.env.client_secret ?? process.argv[3]}&grant_type=client_credentials`, {
 					method: "POST"
 				})
 				.then(res => res.json())
@@ -349,7 +349,7 @@ bot.on("message", function(msg){
 								default:
 									msg.guild.members.fetch(msg.author.id).then(guildMember => {
 										let notif = guildMember.roles.cache.has(IDs.roles.notifs);
-										guildMember.roles.set(IDs.colours[argument] || [])
+										guildMember.roles.set(IDs.colours[argument] ?? [])
 										if(notif){
 											guildMember.roles.add(IDs.roles.notifs)
 										}
@@ -720,4 +720,4 @@ Please have a look at it.`)
 	}
 })
 
-bot.login(process.env.token || process.argv[2]) // Set by the VPS (process.env.token)
+bot.login(process.env.token ?? process.argv[2]) // Set by the VPS (process.env.token)

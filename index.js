@@ -643,7 +643,7 @@ bot.on("message", function(msg){
 						}
 						break;
 					case "wisdom":
-						msg.reply(((ob) => `\n> ${ob.text}\n\u2003\u2014 ${ob.by.replace("\n", "")}`)(pick.apply(null, quotes)))
+						msg.reply((ob => `\n> ${ob.text}\n\u2003\u2014 ${ob.by.replace("\n", "")}`)(pick(...quotes)))
 						break;
 					case "yellatme":
 						modOnly(msg, () => null)

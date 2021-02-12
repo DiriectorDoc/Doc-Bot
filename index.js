@@ -256,7 +256,7 @@ bot.on("message", function(msg){
 								},
 								{
 									name: "Age",
-									value: `${new Date().getFullYear()-2020} year${!(new Date().getFullYear()-2021)?"s":""}`,
+									value: `${new Date().getFullYear()-2020} year${!(new Date().getFullYear()-2021)?"s":""}`, // (Date.now()-15978096e5)/(315576e5)|0 for later
 									inline: true
 								},
 								{

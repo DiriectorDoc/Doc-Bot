@@ -1,3 +1,5 @@
+/* eslint-env es6 */
+/* eslint-disable no-console */
 console.info("Caching packages")
 
 const Discord = require("discord.js"),

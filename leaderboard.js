@@ -1,3 +1,5 @@
+/* eslint-env es6 */
+/* eslint-disable no-console */
 module.exports = new Promise(resolve => {
 	const fetch = require("node-fetch");
 

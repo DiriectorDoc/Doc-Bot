@@ -4,6 +4,7 @@
 	"description": "Personal bot used in Diriector_Doc's discord server",
 	"main": "index.js",
 	"dependencies": {
+		"dataimageattachment": "git+https://github.com/DiriectorDoc/DataImageAttachment.git",
 		"discord.js": "^12.5.1",
 		"js-yaml": "^4.0.0",
 		"node-fetch": "^2.6.1"

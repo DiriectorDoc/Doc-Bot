@@ -169,10 +169,7 @@ bot.on("ready", function(){
 									},
 									timestamp: new Date
 								}),
-								files: [{
-									attachment: "img/logo_twitch.png",
-									name: "logo_twitch.png"
-								}]
+								files: [new Discord.MessageAttachment(Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAMAAABHPGVmAAAANlBMVEUAAACQSP+RR/+QRf+SR/+RR/+PRP+QSP+RRf+SR/+SSP+SSf+RR/+PRP+SRv+SR/+SSP+RR/9zlT3GAAAAEXRSTlMAxO0wReEpVQvcbhvJIrCUegBSdLsAAAE1SURBVGje7dbLbsMwDERRPexaid0k+v+f7SbGoHUECqRHgFHe5WwOIG0Y9qZKKgb0wExDClYecsfKQzasNCRj5CFPjDSkpEorfvr2dFIHJFaUwyl9AcFAR54DkJIGIEsdgDwGIGsdgLxGINERRxy5FLLd3v2eyz7HM5BU3/1B9nl2xBFHHHHEEUccceQ6SN5r7Ze5hf8tkgcg642IwOAhMHgIDCICA90ViMaQEbshI3ZDRuyGjNgNGbEbMmI3ZMRuyIjdaCOv5dgaUFkaNQwgQlOAsVUhGApEYSgQhaFAug0dojAUiMJQIApDgfQaekRhKJBew4L0GhZk6TRMSOozbIjaAMIzUJ4+13yjeTqWg665ZXwHc0CIBhCiAYRoACEaQIgGEKIBhGgAIRpAiAYQvgHEbvwAeWsLTVU1onwAAAAASUVORK5CYII=", "base64"), "logo_twitch.png")]
 							})
 						})
 						clearInterval(liveChecker)

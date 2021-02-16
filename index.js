@@ -264,8 +264,8 @@ bot.on("message", function(msg){
 									inline: true
 								},
 								{
-									name: "Age",
-									value: `${new Date().getFullYear()-2020} year${!(new Date().getFullYear()-2021)?"s":""}`, // (Date.now()-15978096e5)/(315576e5)|0 for later
+									name: "Birthday",
+									value: `August 19, 2020\n(${(Date.now()-15978096e5)/(315576e5)|0} year${!((Date.now()-15978096e5)/(315576e5)|0)?"s":""} ago)`,
 									inline: true
 								},
 								{

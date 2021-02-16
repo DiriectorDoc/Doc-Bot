@@ -141,7 +141,7 @@ module.exports = new Promise(resolve => {
 										continue
 									}
 									await fetch(runs[i+offset].uri(j-offset), get).then(res => res.json()).then(json => {
-										leaderboard.horde[categories[k][2]][categories[k][3]][i].region ??= region(json.data);
+										leaderboard.horde[categories[k][2]][categories[k][3]][i].region = leaderboard.horde[categories[k][2]][categories[k][3]][i].region ??region(json.data);
 										leaderboard.horde[categories[k][2]][categories[k][3]][i].players.push(name(json.data))
 									}).catch(err => {
 										leaderboard.horde[categories[k][2]][categories[k][3]][i].players.push(runs[i+offset].run.players[j-offset].name)
@@ -170,7 +170,7 @@ module.exports = new Promise(resolve => {
 								}
 								for(let j = 0; j < 2; j++){
 									await fetch(runs[i].uri(j), get).then(res => res.json()).then(json => {
-										leaderboard.walker["2p"].wave6[i].region ??= region(json.data)
+										leaderboard.walker["2p"].wave6[i].region = leaderboard.walker["2p"].wave6[i].region ?? region(json.data)
 										leaderboard.walker["2p"].wave6[i].players.push(name(json.data))
 									}).catch(err => {
 										leaderboard.walker["2p"].wave6[i].players.push(runs[i].run.players[j].name)

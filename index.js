@@ -141,8 +141,19 @@ bot.on("ready", function(){
 	let access,
 		expiration = 0,
 		liveChecker,
-		fetchStream = function(){
-			fetch("https://api.twitch.tv/helix/streams?user_id=40464688", {
+		fetchStream = async function(){
+			if(Date.now() > expiration){
+				await fetch(`https://id.twitch.tv/oauth2/token?client_id=bo8uxlgi4spxhtss7xwt8slszlcm38&client_secret=${process.env.client_secret ?? process.argv[3]}&grant_type=client_credentials`, {
+						method: "POST"
+					})
+					.then(res => res.json())
+					.then(json => {
+						access = json.access_token;
+						expiration = json.expires_in + Date.now()
+					})
+					.catch(err => console.error(err))
+			}
+			await fetch("https://api.twitch.tv/helix/streams?user_id=40464688", {
 					headers: {
 						'Client-ID': 'bo8uxlgi4spxhtss7xwt8slszlcm38',
 						"Authorization": "Bearer " + access
@@ -177,34 +188,21 @@ bot.on("ready", function(){
 						clearInterval(liveChecker)
 						console.info("Live checker deactivated")
 					} else {
-						console.info(`No stream live at ${new Date()}. Checker still active.`)
+						console.info(`No stream live at ${new Date}. Checker still active.`)
 					}
 				})
-				.catch(err => console.error(err))
+				.catch(err => {
+					console.error(err)
+					clearInterval(liveChecker)
+					console.info("Live checker deactivated")
+				})
 		};
-	liveChecker = setInterval((() => {
-		let checker = function(){
-			if(Date.now() > expiration){
-				fetch(`https://id.twitch.tv/oauth2/token?client_id=bo8uxlgi4spxhtss7xwt8slszlcm38&client_secret=${process.env.client_secret ?? process.argv[3]}&grant_type=client_credentials`, {
-						method: "POST"
-					})
-					.then(res => res.json())
-					.then(json => {
-						access = json.access_token;
-						expiration = json.expires_in + Date.now();
-						fetchStream()
-					})
-					.catch(err => console.error(err))
-			} else {
-				fetchStream()
-			}
-		}
-		return checker(), checker
-	})(), 18e5)
-	console.info("Live checker active")
 
 	;(async function(){
-		console.log(leaderboard = await require("./leaderboard"));
+		liveChecker = setInterval(fetchStream, 18e5)
+		console.info("Live checker active")
+		await fetchStream()
+		leaderboard = await require("./leaderboard")
 	})()
 })
 

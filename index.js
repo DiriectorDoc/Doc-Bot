@@ -120,6 +120,9 @@ function depricated(msg){
 
 bot.on("ready", function(){
 	console.log("Doc Bot is online")
+	if(process.argv[4] == "maintenance")
+		bot.user.setActivity("Maintenance")
+			.then(presence => console.log('Bot launched in "Maintenance" mode'));
 	bot.users.fetch(IDs.bot, false).then(bot => {
 		self = bot
 	})

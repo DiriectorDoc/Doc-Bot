@@ -43,13 +43,20 @@ module.exports = new Promise(resolve => {
 			},
 			tutorial: []
 		},
-		NA = [,,,].fill({player: "<name>", place: 0, time: "N/A", region: "black"}),
+		NA = [,,,].fill({
+			player: "<name>",
+			place: 0,
+			time: "N/A",
+			region: "black"
+		}),
 
 		name = p => p.names?.international ?? "<name>",
 		region = p => p.location?.country?.code ?? "black",
 		place = r => r.place || 0,
 
-		get = {method: "Get"},
+		get = {
+			method: "Get"
+		},
 		url = "https://www.speedrun.com/api/v1/leaderboards/m1z73360/category/",
 		categories = [
 			["wdmzez52?var-5lypvpyl=814eexwl", "Tournament/Sigs", "sigs"],
@@ -66,10 +73,13 @@ module.exports = new Promise(resolve => {
 			["wdm66m3k?var-ylpegpj8=5lmjzxyl&var-9l779p9l=810e30jq", "Horde/4 Players/Wave 11", "4p", "wave11"],
 			["wdm66m3k?var-ylpegpj8=5lmjzxyl&var-9l779p9l=jq6k3ynl", "Horde/4 Players/Wave 21", "4p", "wave21"],
 			["02qvnl7d?var-kn0jo43l=jqzeyrgq", "Walker Attack/2 Players/Wave 6"]
-		];
+		],
 
-	Object.prototype.uri = function(a){return this.run.players[a].uri};
-	Object.prototype.time = function(){let t = this.run.times.primary_t;return t ? `${t/60|0}:${(t%60>9?"":"0")+t%60}` : "N/A"};
+		uri = (run, a) => run.run.players[a].uri,
+		time = function(time){
+			let t = time.run.times.primary_t;
+			return t ? `${t/60|0}:${(t%60>9?"":"0")+t%60}` : "N/A"
+		};
 
 	console.group("Fetching leaderboard")
 
@@ -82,13 +92,13 @@ module.exports = new Promise(resolve => {
 						console.info(categories[k][1])
 						let runs = json.data.runs;
 						for(let i = 0; i < 3; i++){
-							await fetch(runs[i].uri(0), get).then(res => res.json()).then(json => {
+							await fetch(uri(runs[i], 0), get).then(res => res.json()).then(json => {
 								let player = json.data
 								leaderboard.tournament[categories[k][2]][i] = {
 									player: name(player),
 									region: region(player),
 									place: place(runs[i]),
-									time: runs[i].time()
+									time: time(runs[i])
 								}
 							})
 						}
@@ -105,13 +115,13 @@ module.exports = new Promise(resolve => {
 						console.info(categories[k][1])
 						let runs = json.data.runs;
 						for(let i = 0; i < 3; i++){
-							await fetch(runs[i].uri(0), get).then(res => res.json()).then(json => {
+							await fetch(uri(runs[i], 0), get).then(res => res.json()).then(json => {
 								let player = json.data
 								leaderboard[categories[k][4]][categories[k][2]][categories[k][3]][i] = {
 									player: name(player),
 									region: region(player),
 									place: place(runs[i]),
-									time: runs[i].time()
+									time: time(runs[i])
 								}
 							})
 						}
@@ -132,7 +142,7 @@ module.exports = new Promise(resolve => {
 								leaderboard.horde[categories[k][2]][categories[k][3]][i] = {
 									players: [],
 									place: place(runs[i]),
-									time: runs[i].time()
+									time: time(runs[i])
 								}
 								let offset = 0;
 								for(let j = 0; j < +categories[k][2][0]+offset; j++){
@@ -140,7 +150,7 @@ module.exports = new Promise(resolve => {
 										offset++
 										continue
 									}
-									await fetch(runs[i+offset].uri(j-offset), get).then(res => res.json()).then(json => {
+									await fetch(uri(runs[i+offset], j-offset), get).then(res => res.json()).then(json => {
 										leaderboard.horde[categories[k][2]][categories[k][3]][i].region = leaderboard.horde[categories[k][2]][categories[k][3]][i].region ??region(json.data);
 										leaderboard.horde[categories[k][2]][categories[k][3]][i].players.push(name(json.data))
 									}).catch(err => {
@@ -166,10 +176,10 @@ module.exports = new Promise(resolve => {
 								leaderboard.walker["2p"].wave6[i] = {
 									players: [],
 									place: place(runs[i]),
-									time: runs[i].time()
+									time: time(runs[i])
 								}
 								for(let j = 0; j < 2; j++){
-									await fetch(runs[i].uri(j), get).then(res => res.json()).then(json => {
+									await fetch(uri(runs[i], j), get).then(res => res.json()).then(json => {
 										leaderboard.walker["2p"].wave6[i].region = leaderboard.walker["2p"].wave6[i].region ?? region(json.data)
 										leaderboard.walker["2p"].wave6[i].players.push(name(json.data))
 									}).catch(err => {
@@ -190,13 +200,13 @@ module.exports = new Promise(resolve => {
 						console.info("Tutorial%")
 						let runs = json.data.runs;
 						for(let i = 0; i < 3; i++){
-							await fetch(runs[i].uri(0), get).then(res => res.json()).then(json => {
+							await fetch(uri(runs[i], 0), get).then(res => res.json()).then(json => {
 								let player = json.data
 								leaderboard.tutorial[i] = {
 									player: name(player),
 									region: region(player),
 									place: place(runs[i]),
-									time: runs[i].time()
+									time: time(runs[i])
 								}
 							})
 						}

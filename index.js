@@ -4,7 +4,7 @@ console.info("Caching packages")
 
 const Discord = require("discord.js"),
 	  fetch = require("node-fetch"),
-	  
+
 	  DataImageAttachment = require("dataimageattachment"),
 
 	  bot = new Discord.Client({partials: ["MESSAGE", "CHANNEL", "REACTION"]}),

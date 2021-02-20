@@ -17,7 +17,67 @@ const Discord = require("discord.js"),
 let self,
 	dmMe,
 
-	leaderboard;
+	leaderboard,
+	
+	access,
+	expiration = 0,
+	liveChecker,
+	fetchStream = async function(){
+		if(Date.now() > expiration){
+			await fetch(`https://id.twitch.tv/oauth2/token?client_id=bo8uxlgi4spxhtss7xwt8slszlcm38&client_secret=${process.env.client_secret ?? process.argv[3]}&grant_type=client_credentials`, {
+					method: "POST"
+				})
+				.then(res => res.json())
+				.then(json => {
+					access = json.access_token;
+					expiration = json.expires_in + Date.now()
+				})
+				.catch(err => console.error(err))
+		}
+		await fetch("https://api.twitch.tv/helix/streams?user_id=40464688", {
+				headers: {
+					'Client-ID': 'bo8uxlgi4spxhtss7xwt8slszlcm38',
+					"Authorization": "Bearer " + access
+				}
+			})
+			.then(res => res.json())
+			.then(json => {
+				let stream = json.data[0];
+				if(stream){
+					bot.channels.fetch(IDs.channels["stream-notifs"]).then(channel => {
+						channel.send(`<@&${IDs.roles.notifs}>\nDiriector_Doc just went live ${(Date.now()-new Date(stream.started_at))/6e4|0} minutes ago. He's playing some ${stream.game_name}. Come watch and chat with him!`, {
+							embed: new Discord.MessageEmbed({
+								title: stream.title,
+								color: 0x9147FF,
+								author: {
+									name: "Doc Bot",
+									icon_url: self.displayAvatarURL()
+								},
+								url: "https://twitch.tv/diriector_doc",
+								thumbnail: {
+									url: "attachment://logo_twitch.png"
+								},
+								description: "Current viewers: " + stream.viewer_count,
+								image: {
+									url: stream.thumbnail_url.replace("{width}", 400).replace("{height}", 225)
+								},
+								timestamp: new Date
+							}),
+							files: [new DataImageAttachment("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAMAAABHPGVmAAAARVBMVEUAAACQSP+SR/+SSP+RR/+PRP+QRf+RR/+RRf+SRv+SR/+RR/////+ZVP/q3P+gX//t4f/awv/69//z7P+obv/izf/Lp/8BhtXnAAAAC3RSTlMAxEVu4SEu7QuwlJ0ZmVEAAAE2SURBVGje7dY7coNAFERRPhL6IIGRsPe/VCfGbVtQTF1oqii/G3ZyghfMZENFbSrP1EWzDTlr9SGlVh+Sa7UhlUYfctVoQ86n2lY+dvb7SgkZOXtzW6U3ITq7HblaEZ3djhT1BshlA+RYb4CUWyB5IIEEsiukb7/6PT+GuV8D+X5P/yDD3AYSSCCBBBJIIIEEsh+kGZrad/MX/rdIswHybI2IDB8iw4fIMCIyVAkQYAAEGAABBkCAMYMsMwACDIAAAyDAAAgwxpCP7rXnTT26iUYNIbO9/zD6eiYZAAEGQIABkGSDIcAACDAAAgyApBocAQZA0g2OpBsc6dINjtzTDY5gQ4jPUFUx3qme6FC8VmWsw5RxzBYnxGgIMRpCjIYQoyHEaAgxGkKMhhCjIcRoCPEbQpYbn6fkcVqjKOBhAAAAAElFTkSuQmCC", "logo_twitch.png")]
+						})
+					})
+					clearInterval(liveChecker)
+					console.info("Live checker deactivated")
+				} else {
+					console.info(`No stream live at ${new Date}. Checker still active.`)
+				}
+			})
+			.catch(err => {
+				console.error(err)
+				clearInterval(liveChecker)
+				console.info("Live checker deactivated")
+			})
+	};
 
 /* Randomly picks one of and of the given parameters */
 function pick(){
@@ -141,65 +201,6 @@ bot.on("ready", function(){
 			}
 		})
 	})
-	let access,
-		expiration = 0,
-		liveChecker,
-		fetchStream = async function(){
-			if(Date.now() > expiration){
-				await fetch(`https://id.twitch.tv/oauth2/token?client_id=bo8uxlgi4spxhtss7xwt8slszlcm38&client_secret=${process.env.client_secret ?? process.argv[3]}&grant_type=client_credentials`, {
-						method: "POST"
-					})
-					.then(res => res.json())
-					.then(json => {
-						access = json.access_token;
-						expiration = json.expires_in + Date.now()
-					})
-					.catch(err => console.error(err))
-			}
-			await fetch("https://api.twitch.tv/helix/streams?user_id=40464688", {
-					headers: {
-						'Client-ID': 'bo8uxlgi4spxhtss7xwt8slszlcm38',
-						"Authorization": "Bearer " + access
-					}
-				})
-				.then(res => res.json())
-				.then(json => {
-					let stream = json.data[0];
-					if(stream){
-						bot.channels.fetch(IDs.channels["stream-notifs"]).then(channel => {
-							channel.send(`<@&${IDs.roles.notifs}>\nDiriector_Doc just went live ${(Date.now()-new Date(stream.started_at))/6e4|0} minutes ago. He's playing some ${stream.game_name}. Come watch and chat with him!`, {
-								embed: new Discord.MessageEmbed({
-									title: stream.title,
-									color: 0x9147FF,
-									author: {
-										name: "Doc Bot",
-										icon_url: self.displayAvatarURL()
-									},
-									url: "https://twitch.tv/diriector_doc",
-									thumbnail: {
-										url: "attachment://logo_twitch.png"
-									},
-									description: "Current viewers: " + stream.viewer_count,
-									image: {
-										url: stream.thumbnail_url.replace("{width}", 400).replace("{height}", 225)
-									},
-									timestamp: new Date
-								}),
-								files: [new DataImageAttachment("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAMAAABHPGVmAAAANlBMVEUAAACQSP+RR/+QRf+SR/+RR/+PRP+QSP+RRf+SR/+SSP+SSf+RR/+PRP+SRv+SR/+SSP+RR/9zlT3GAAAAEXRSTlMAxO0wReEpVQvcbhvJIrCUegBSdLsAAAE1SURBVGje7dbLbsMwDERRPexaid0k+v+f7SbGoHUECqRHgFHe5WwOIG0Y9qZKKgb0wExDClYecsfKQzasNCRj5CFPjDSkpEorfvr2dFIHJFaUwyl9AcFAR54DkJIGIEsdgDwGIGsdgLxGINERRxy5FLLd3v2eyz7HM5BU3/1B9nl2xBFHHHHEEUccceQ6SN5r7Ze5hf8tkgcg642IwOAhMHgIDCICA90ViMaQEbshI3ZDRuyGjNgNGbEbMmI3ZMRuyIjdaCOv5dgaUFkaNQwgQlOAsVUhGApEYSgQhaFAug0dojAUiMJQIApDgfQaekRhKJBew4L0GhZk6TRMSOozbIjaAMIzUJ4+13yjeTqWg665ZXwHc0CIBhCiAYRoACEaQIgGEKIBhGgAIRpAiAYQvgHEbvwAeWsLTVU1onwAAAAASUVORK5CYII=", "logo_twitch.png")]
-							})
-						})
-						clearInterval(liveChecker)
-						console.info("Live checker deactivated")
-					} else {
-						console.info(`No stream live at ${new Date}. Checker still active.`)
-					}
-				})
-				.catch(err => {
-					console.error(err)
-					clearInterval(liveChecker)
-					console.info("Live checker deactivated")
-				})
-		};
 
 	;(async function(){
 		liveChecker = setInterval(fetchStream, 18e5)
@@ -429,6 +430,9 @@ bot.on("message", function(msg){
 								msg.reply("You will now get stream notifications.")
 							}
 						})
+						break;
+					case "live":
+						modOnly(msg, fetchStream)
 						break;
 					case "penis":
 						msg.reply(`your penis is this long:\n8${Array(9).fill("=",0,msg.author.id.match(/\d{4}$/)%9+1).join("")}D`)

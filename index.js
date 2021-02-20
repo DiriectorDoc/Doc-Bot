@@ -388,19 +388,23 @@ bot.on("message", function(msg){
 									value: "Replies with a link for submitting a bug"
 								},
 								{
-									name: "`!color`",
-									value: "Changes display name color"
+									name: "`!colour`",
+									value: "Changes display name colour (also accepts `!color`)"
 								},
 								{
 									name: "`!commands`",
 									value: "Displays this here list"
 								},
 								{
+									name: "`!notify`",
+									value: "Enables/Disables stream notifications (user specific)"
+								},
+								{
 									name: "`!request`",
 									value: "Sends a request to D_Doc"
 								},
 								{
-									name: "`!speedruns`",
+									name: "`!speedrun`",
 									value: "Displays Brawlhalla speedrun leaderboards"
 								},
 								{

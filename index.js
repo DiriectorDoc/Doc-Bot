@@ -266,7 +266,7 @@ bot.on("message", function(msg){
 								},
 								{
 									name: "Birthday",
-									value: `August 19, 2020\n(${(Date.now()-15978096e5)/(315576e5)|0} year${!((Date.now()-15978096e5)/(315576e5)|0)?"s":""} ago)`,
+									value: `August 19, 2020\n(${(Date.now()-15978096e5)/315576e5|0} year${(Date.now()-15978096e5)/315576e5|0?"":"s"} ago)`,
 									inline: true
 								},
 								{

@@ -76,10 +76,7 @@ module.exports = new Promise(resolve => {
 		],
 
 		uri = (run, a) => run.run.players[a].uri,
-		time = function(time){
-			let t = time.run.times.primary_t;
-			return t ? `${t/60|0}:${(t%60>9?"":"0")+t%60}` : "N/A"
-		};
+		time = time => ((time = time.run.times.primary_t) ? `${time/60|0}:${(time%60>9?"":"0")+time%60}` : "N/A");
 
 	console.group("Fetching leaderboard")
 

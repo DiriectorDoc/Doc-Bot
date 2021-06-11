@@ -4,9 +4,7 @@
   by: &me "Diriector_Doc, 2020"
 - text: Friend come and go, enemies stick around, and victims will avoid you.
   by: *me
-- 
-  text: >
-    "First-world problems" is having a fridge full of food while not knowing what to eat. "Spoiled brat problems" is having a fridge full of food that doesn't match your outfit.
+- text: '"First-world problems" is having a fridge full of food while not knowing what to eat. "Spoiled brat problems" is having a fridge full of food that doesn''t match your outfit.'
   by: *me
 - text: If the opposition replies with "That source isn't always correct," they care less about being right and more about winning the argument.
   by: *me
@@ -36,7 +34,7 @@
   by: Lily Tomlin, Unknown year
 - text: A fool can throw a stone in a pond that 100 wise men can not get out.
   by: Saul Bellow, 1915-2005
-- text: Hurricanes. Tornados. Blizards. Earthquakes. Volcanoes. Floods. Welsome to the United States.
+- text: Hurricanes. Tornados. Blizards. Earthquakes. Volcanoes. Floods. Welcome to the United States.
   by: *me
 - text: I do not think, therefore I do not am.
   by: *x
@@ -50,3 +48,9 @@
   by: *x
 - text: If you don't like how I drive, get off the sidewalk.
   by: *x
+- text: Insult a sheep; they won't get offended.
+  by: *me
+- text: Some cause happiness wherever they go; others whenever they go.
+  by: Oscar Wilde, 1854-1900
+- text: I saw this flower and thought of you because its dead!
+  by: SHED, 2019

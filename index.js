@@ -1,7 +1,11 @@
+/* eslint-env es6 */
+/* eslint-disable no-console */
 console.info("Caching packages")
 
 const Discord = require("discord.js"),
 	  fetch = require("node-fetch"),
+
+	  DataImageAttachment = require("dataimageattachment"),
 
 	  bot = new Discord.Client({partials: ["MESSAGE", "CHANNEL", "REACTION"]}),
 
@@ -13,7 +17,67 @@ const Discord = require("discord.js"),
 let self,
 	dmMe,
 
-	leaderboard;
+	leaderboard,
+	
+	access,
+	expiration = 0,
+	liveChecker,
+	fetchStream = async function(){
+		if(Date.now() > expiration){
+			await fetch(`https://id.twitch.tv/oauth2/token?client_id=bo8uxlgi4spxhtss7xwt8slszlcm38&client_secret=${process.env.client_secret ?? process.argv[3]}&grant_type=client_credentials`, {
+					method: "POST"
+				})
+				.then(res => res.json())
+				.then(json => {
+					access = json.access_token;
+					expiration = json.expires_in + Date.now()
+				})
+				.catch(err => console.error(err))
+		}
+		await fetch("https://api.twitch.tv/helix/streams?user_id=40464688", {
+				headers: {
+					'Client-ID': 'bo8uxlgi4spxhtss7xwt8slszlcm38',
+					"Authorization": "Bearer " + access
+				}
+			})
+			.then(res => res.json())
+			.then(json => {
+				let stream = json.data[0];
+				if(stream){
+					bot.channels.fetch(IDs.channels["stream-notifs"]).then(channel => {
+						channel.send(`<@&${IDs.roles.notifs}>\nDiriector_Doc just went live ${(Date.now()-new Date(stream.started_at))/6e4|0} minutes ago. He's playing some ${stream.game_name}. Come watch and chat with him!`, {
+							embed: new Discord.MessageEmbed({
+								title: stream.title,
+								color: 0x9147FF,
+								author: {
+									name: "Doc Bot",
+									icon_url: self.displayAvatarURL()
+								},
+								url: "https://twitch.tv/diriector_doc",
+								thumbnail: {
+									url: "attachment://logo_twitch.png"
+								},
+								description: "Current viewers: " + stream.viewer_count,
+								image: {
+									url: stream.thumbnail_url.replace("{width}", 400).replace("{height}", 225)
+								},
+								timestamp: new Date
+							}),
+							files: [new DataImageAttachment("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAMAAABHPGVmAAAARVBMVEUAAACQSP+SR/+SSP+RR/+PRP+QRf+RR/+RRf+SRv+SR/+RR/////+ZVP/q3P+gX//t4f/awv/69//z7P+obv/izf/Lp/8BhtXnAAAAC3RSTlMAxEVu4SEu7QuwlJ0ZmVEAAAE2SURBVGje7dY7coNAFERRPhL6IIGRsPe/VCfGbVtQTF1oqii/G3ZyghfMZENFbSrP1EWzDTlr9SGlVh+Sa7UhlUYfctVoQ86n2lY+dvb7SgkZOXtzW6U3ITq7HblaEZ3djhT1BshlA+RYb4CUWyB5IIEEsiukb7/6PT+GuV8D+X5P/yDD3AYSSCCBBBJIIIEEsh+kGZrad/MX/rdIswHybI2IDB8iw4fIMCIyVAkQYAAEGAABBkCAMYMsMwACDIAAAyDAAAgwxpCP7rXnTT26iUYNIbO9/zD6eiYZAAEGQIABkGSDIcAACDAAAgyApBocAQZA0g2OpBsc6dINjtzTDY5gQ4jPUFUx3qme6FC8VmWsw5RxzBYnxGgIMRpCjIYQoyHEaAgxGkKMhhCjIcRoCPEbQpYbn6fkcVqjKOBhAAAAAElFTkSuQmCC", "logo_twitch.png")]
+						})
+					})
+					clearInterval(liveChecker)
+					console.info("Live checker deactivated")
+				} else {
+					console.info(`No stream live at ${new Date}. Checker still active.`)
+				}
+			})
+			.catch(err => {
+				console.error(err)
+				clearInterval(liveChecker)
+				console.info("Live checker deactivated")
+			})
+	};
 
 /* Randomly picks one of and of the given parameters */
 function pick(){
@@ -68,7 +132,7 @@ function getTop3(cat){
 	let fields = [];
 	for(var i = 0; i < 3 && cat[i]; i++){
 		fields.push({
-			name: `${cat[i].place}${[, "ˢᵗ", "ⁿᵈ", "ʳᵈ"][cat[i].place] || "ᵗʰ"} __${cat[i].time}__`,
+			name: `${cat[i].place}${[, "ˢᵗ", "ⁿᵈ", "ʳᵈ"][cat[i].place] ?? "ᵗʰ"} __${cat[i].time}__`,
 			value: `:flag_${cat[i].region}:${cat[i].player || cat[i].players.join(", ")}`,
 			inline: true
 		})
@@ -104,7 +168,7 @@ function msgLink(msg){
 
 /* Replies to user with a message saying they used a command incorrectly */
 function badCommand(msg, command, text){
-	msg.reply(`${text || "You inputted that command incorrectly."} Try again or enter \`!${command} /?\` for help.`)
+	msg.reply(`${text ?? "You inputted that command incorrectly."} Try again or enter \`!${command} /?\` for help.`)
 }
 
 /* Sends a deprication warning */
@@ -116,6 +180,9 @@ function depricated(msg){
 
 bot.on("ready", function(){
 	console.log("Doc Bot is online")
+	if(process.argv[4] == "maintenance")
+		bot.user.setActivity("Maintenance")
+			.then(presence => console.log('Bot launched in "Maintenance" mode'));
 	bot.users.fetch(IDs.bot, false).then(bot => {
 		self = bot
 	})
@@ -134,69 +201,12 @@ bot.on("ready", function(){
 			}
 		})
 	})
-	let access,
-		expiration = 0,
-		liveChecker,
-		fetchStream = function(){
-			fetch("https://api.twitch.tv/helix/streams?user_id=40464688", {
-					headers: {
-						'Client-ID': 'bo8uxlgi4spxhtss7xwt8slszlcm38',
-						"Authorization": "Bearer " + access
-					}
-				})
-				.then(res => res.json())
-				.then(json => {
-					let stream = json.data[0];
-					if (stream) {
-						bot.channels.fetch(IDs.channels["stream-notifs"]).then(channel => {
-							channel.send(`<@&${IDs.roles.notifs}>\nDiriector_Doc just went live ${(Date.now()-new Date(stream.started_at))/6e4|0} minutes ago. He's playing some ${stream.game_name}. Come watch and chat with him!`, {
-								embed: new Discord.MessageEmbed({
-									title: stream.title,
-									color: 0x9147FF,
-									author: {
-										name: "Doc Bot",
-										icon_url: self.displayAvatarURL()
-									},
-									url: "https://twitch.tv/diriector_doc",
-									thumbnail: {
-										url: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNDQ4IiB3aWR0aD0iNDQ4Ij48cGF0aCBkPSJNNDAgMEwxMCA3N3YzMTRoMTA3djU3aDYwbDU3LTU3aDg3bDExNy0xMTdWMHptMzU4IDI1NGwtNjcgNjdIMjI0bC01NyA1N3YtNTdINzdWNDBoMzIxem0tNjctMTM3djExN2gtNDBWMTE3em0tMTA3IDB2MTE3aC00MFYxMTd6IiBmaWxsPSIjOTE0N2ZmIi8+PC9zdmc+"
-									},
-									description: "Current viewers: " + stream.viewer_count,
-									image: {
-										url: stream.thumbnail_url.replace("{width}", 400).replace("{height}", 225)
-									},
-									timestamp: new Date
-								})
-							})
-						})
-						clearInterval(liveChecker)
-						console.info("Live checker deactivated")
-					} else {
-						console.info(`No stream live at ${new Date()}. Checker still active.`)
-					}
-				})
-				.catch(err => console.error(err))
-		};
-	liveChecker = setInterval(function(){
-		if(Date.now() > expiration){
-			fetch(`https://id.twitch.tv/oauth2/token?client_id=bo8uxlgi4spxhtss7xwt8slszlcm38&client_secret=${process.env.client_secret || process.argv[3]}&grant_type=client_credentials`, {
-					method: "POST"
-				})
-				.then(res => res.json())
-				.then(json => {
-					access = json.access_token;
-					expiration = json.expires_in + Date.now();
-					fetchStream()
-				})
-				.catch(err => console.error(err))
-		} else {
-			fetchStream()
-		}
-	}, 18e5)
-	console.info("Live checker active")
 
 	;(async function(){
-		console.log(leaderboard = await require("./leaderboard"));
+		liveChecker = setInterval(fetchStream, 18e5)
+		console.info("Live checker active")
+		await fetchStream()
+		leaderboard = await require("./leaderboard")
 	})()
 })
 
@@ -241,7 +251,7 @@ bot.on("message", function(msg){
 							fields: [
 								{
 									name: "Version",
-									value: "0.9.0",
+									value: "0.9.1",
 									inline: true
 								},
 								{
@@ -255,8 +265,8 @@ bot.on("message", function(msg){
 									inline: true
 								},
 								{
-									name: "Age",
-									value: `${new Date().getFullYear()-2020} year${!(new Date().getFullYear()-2021)?"s":""}`,
+									name: "Birthday",
+									value: `August 19, 2020\n(${(Date.now()-15978096e5)/315576e5|0} year${(Date.now()-15978096e5)/315576e5|0?"":"s"} ago)`,
 									inline: true
 								},
 								{
@@ -349,7 +359,7 @@ bot.on("message", function(msg){
 								default:
 									msg.guild.members.fetch(msg.author.id).then(guildMember => {
 										let notif = guildMember.roles.cache.has(IDs.roles.notifs);
-										guildMember.roles.set(IDs.colours[argument] || [])
+										guildMember.roles.set(IDs.colours[argument] ?? [])
 										if(notif){
 											guildMember.roles.add(IDs.roles.notifs)
 										}
@@ -379,19 +389,23 @@ bot.on("message", function(msg){
 									value: "Replies with a link for submitting a bug"
 								},
 								{
-									name: "`!color`",
-									value: "Changes display name color"
+									name: "`!colour`",
+									value: "Changes display name colour (also accepts `!color`)"
 								},
 								{
 									name: "`!commands`",
 									value: "Displays this here list"
 								},
 								{
+									name: "`!notify`",
+									value: "Enables/Disables stream notifications (user specific)"
+								},
+								{
 									name: "`!request`",
 									value: "Sends a request to D_Doc"
 								},
 								{
-									name: "`!speedruns`",
+									name: "`!speedrun`",
 									value: "Displays Brawlhalla speedrun leaderboards"
 								},
 								{
@@ -416,6 +430,9 @@ bot.on("message", function(msg){
 								msg.reply("You will now get stream notifications.")
 							}
 						})
+						break;
+					case "live":
+						modOnly(msg, fetchStream)
 						break;
 					case "penis":
 						msg.reply(`your penis is this long:\n8${Array(9).fill("=",0,msg.author.id.match(/\d{4}$/)%9+1).join("")}D`)
@@ -643,7 +660,7 @@ bot.on("message", function(msg){
 						}
 						break;
 					case "wisdom":
-						msg.reply(((ob) => `\n> ${ob.text}\n\u2003\u2014 ${ob.by.replace("\n", "")}`)(pick.apply(null, quotes)))
+						msg.reply((ob => `\n> ${ob.text}\n\u2003\u2014 ${ob.by.replace("\n", "")}`)(pick(...quotes)))
 						break;
 					case "yellatme":
 						modOnly(msg, () => null)
@@ -720,4 +737,4 @@ Please have a look at it.`)
 	}
 })
 
-bot.login(process.env.token || process.argv[2]) // Set by the VPS (process.env.token)
+bot.login(process.env.token ?? process.argv[2]) // Set by the VPS (process.env.token)

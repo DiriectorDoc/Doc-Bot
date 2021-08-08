@@ -1,5 +1,3 @@
-/* eslint-env es6 */
-/* eslint-disable no-console */
 console.info("Caching packages")
 
 const Discord = require("discord.js"),
@@ -251,7 +249,7 @@ bot.on("message", function(msg){
 							fields: [
 								{
 									name: "Version",
-									value: "0.9.1",
+									value: "0.10.0",
 									inline: true
 								},
 								{

@@ -1,11 +1,11 @@
 {
 	"name": "doc-bot",
-	"version": "0.9.1",
+	"version": "0.10.0",
 	"description": "Personal bot used in Diriector_Doc's discord server",
 	"main": "index.js",
 	"dependencies": {
 		"dataimageattachment": "^1.0.2",
-		"discord.js": "^12.5.3",
+		"discord.js": "^13.0.0",
 		"js-yaml": "^4.0.0",
 		"node-fetch": "^2.6.1"
 	},

@@ -5,7 +5,10 @@ const Discord = require("discord.js"),
 
 	  DataImageAttachment = require("dataimageattachment"),
 
-	  bot = new Discord.Client({partials: ["MESSAGE", "CHANNEL", "REACTION"]}),
+	  bot = new Discord.Client({
+		  intents: ["GUILDS", "GUILD_MESSAGES", "DIRECT_MESSAGES"],
+		  partials: ["CHANNEL"]
+		}),
 
 	  yaml = (link) => require("js-yaml").load(require("fs").readFileSync(link, "utf8")),
 
@@ -178,9 +181,10 @@ function depricated(msg){
 
 bot.on("ready", function(){
 	console.log("Doc Bot is online")
-	if(process.argv[4] == "maintenance")
+	if(process.argv[4] == "maintenance"){
 		bot.user.setActivity("Maintenance")
-			.then(presence => console.log('Bot launched in "Maintenance" mode'));
+		console.log('Bot launched in "Maintenance" mode');
+	}
 	bot.users.fetch(IDs.bot, false).then(bot => {
 		self = bot
 	})
@@ -191,7 +195,8 @@ bot.on("ready", function(){
 	})
 	bot.channels.fetch(IDs.channels.promotion).then(channel => {
 		channel.messages.fetch().then(async messages => {
-			for(let msg of messages.array()){
+			for(let msg of messages){
+				console.log(msg)
 				msg.delete({
 					timeout: 864e5 - Date.now() + msg.createdTimestamp,
 					reason: "Automatic. Promotions are deleted after 24 hours."
@@ -208,7 +213,7 @@ bot.on("ready", function(){
 	})()
 })
 
-bot.on("message", function(msg){
+bot.on("messageCreate", msg => {
 	if(msg.author.bot)
 		return;
 	switch(msg.channel.name){
@@ -711,6 +716,7 @@ bot.on("message", function(msg){
 	}
 })
 
+/*
 bot.on("messageReactionAdd", async (reaction, user) => {
 	// When we receive a reaction we check if the reaction is partial or not
 	if (reaction.partial) {
@@ -733,6 +739,6 @@ Link: ${msgLink(reaction.message)}
 
 Please have a look at it.`)
 	}
-})
+})*/
 
 bot.login(process.env.token ?? process.argv[2]) // Set by the VPS (process.env.token)

@@ -209,8 +209,12 @@ bot.on("ready", function(){
 		liveChecker = setInterval(fetchStream, 18e5)
 		console.info("Live checker active")
 		await fetchStream()
-		leaderboard = await require("./leaderboard")
+		//leaderboard = await require("./leaderboard")
 	})()
+})
+
+bot.on("buttonPress", async function(button){
+	console.log(button)
 })
 
 bot.on("messageCreate", msg => {
@@ -425,13 +429,24 @@ bot.on("messageCreate", msg => {
 						break;
 					case "notify":
 						msg.guild.members.fetch(msg.author.id).then(guildMember => {
-							if(guildMember.roles.cache.has(IDs.roles.notifs)){
-								guildMember.roles.remove(IDs.roles.notifs)
-								msg.reply("You will no longer get stream notifications.")
-							} else {
-								guildMember.roles.add(IDs.roles.notifs)
-								msg.reply("You will now get stream notifications.")
-							}
+							let hasRole = guildMember.roles.cache.has(IDs.roles.notifs),
+								actionRow = new Discord.MessageActionRow();
+								actionRow.addComponents(
+									new Discord.MessageButton({
+									customId: "notifyOn",
+									label: "On",
+									style: "PRIMARY"
+								}),
+								new Discord.MessageButton({
+									customId: "notifyOff",
+									label: "Off",
+									style: "DANGER"
+								}))
+							msg.reply({
+								content: `You currently have notifications **${hasRole ? "ON" : "OFF"}**\n`
+										+`You will ${hasRole ? "" : "not"} be pinged when Diriector_Doc goes live.`,
+								components: [actionRow]
+							})
 						})
 						break;
 					case "live":
@@ -716,6 +731,10 @@ bot.on("messageCreate", msg => {
 	}
 })
 
+bot.on("interactionCreate", interaction => {
+	if (!interaction.isButton()) return;
+	console.log(interaction);
+})
 /*
 bot.on("messageReactionAdd", async (reaction, user) => {
 	// When we receive a reaction we check if the reaction is partial or not
